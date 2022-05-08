@@ -25,5 +25,6 @@ public class Usuario implements Serializable {
     @Column(length = 100)
     private String password;
 
+    private boolean disponible; // estado
 
 }
