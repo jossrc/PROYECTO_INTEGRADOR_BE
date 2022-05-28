@@ -14,17 +14,36 @@ public class Usuario implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "idUsuario")
     private int id;
 
     private String nombre;
     private String apellido;
 
-    @Column(length = 100, unique = true)
+    @Column(name="correo", length = 100, unique = true)
     private String email;
+
+    @Column(length = 8)
+    private String dni;
 
     @Column(length = 100)
     private String password;
 
-    private boolean disponible; // estado
+    private boolean disponible; // Default true
+    private int estado; // Default 1
+
+    @Column(name = "idubigeo")
+    private int idUbigeo;
+
+    @Column(name = "idrol")
+    private int idRol;
+
+    @Column(name="idlocal")
+    private int idLocal;
+
+    public Usuario() {
+        this.estado = 1;
+        this.disponible = true;
+    }
 
 }
