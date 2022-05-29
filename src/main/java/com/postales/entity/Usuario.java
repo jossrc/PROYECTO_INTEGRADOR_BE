@@ -54,4 +54,18 @@ public class Usuario implements Serializable {
         this.disponible = true;
     }
 
+    public Usuario(Usuario usuario) {
+        this.idUsuario = usuario.getIdUsuario();
+        this.nombre = usuario.getNombre();
+        this.apellido = usuario.getApellido();
+        this.email = usuario.getEmail();
+        this.dni = usuario.getDni();
+        this.direccion = usuario.getDireccion();
+        this.disponible = usuario.isDisponible();
+        this.estado = usuario.getEstado();
+        this.ubigeo = usuario.getUbigeo();
+        this.rol = usuario.getRol();
+        this.local = usuario.getLocal();
+    }
+
 }

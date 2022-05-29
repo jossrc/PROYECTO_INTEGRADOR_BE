@@ -1,6 +1,7 @@
 package com.postales.service;
 
 import com.postales.entity.Usuario;
+import com.postales.projections.UsuarioInfo;
 
 import java.util.List;
 import java.util.Optional;
