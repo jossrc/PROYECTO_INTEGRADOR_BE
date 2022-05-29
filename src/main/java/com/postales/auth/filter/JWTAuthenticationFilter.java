@@ -1,39 +1,38 @@
 package com.postales.auth.filter;
 
 import com.google.gson.Gson;
+import com.postales.auth.service.JWTService;
+import com.postales.auth.service.JWTServiceImpl;
 import com.postales.entity.Usuario;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import javax.crypto.SecretKey;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Date;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
-    public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
+    private final JWTService jwtService;
+
+    public JWTAuthenticationFilter(AuthenticationManager authenticationManager, JWTService jwtService) {
         this.authenticationManager = authenticationManager;
         setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/api/login", "POST"));
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -76,30 +75,28 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        Map<String, Object> body = new HashMap<>();
+        body.put("mensaje", "Error de autenticación: correo o contraseña incorrectas");
+        body.put("error", failed.getMessage());
+
+        Gson gson = new Gson();
+        response.getWriter().write(gson.toJson(body));
+        response.setStatus(401);
+        response.setContentType("application/json");
+    }
+
+    @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         Gson gson = new Gson();
-        String username = ((User) authResult.getPrincipal()).getUsername();
+        String token = jwtService.create(authResult);
+        User user = (User) authResult.getPrincipal();
 
-        SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
-
-        Collection<? extends GrantedAuthority> roles = authResult.getAuthorities();
-
-        Claims claims = Jwts.claims();
-        claims.put("authorities", gson.toJson(roles));
-
-        String token = Jwts.builder()
-                .setClaims(claims)
-                .setSubject(username)
-                .signWith(secretKey)
-                .setIssuedAt(new Date())
-                .setExpiration( new Date(System.currentTimeMillis() + 14000000L) )
-                .compact();
-
-        response.addHeader("Authorization", "Bearer " + token);
+        response.addHeader(JWTServiceImpl.HEADER_STRING, JWTServiceImpl.TOKEN_PREFIX + token);
         Map<String, Object> body = new HashMap<>();
         body.put("token", token);
         body.put("user", (User) authResult.getPrincipal());
-        body.put("mensaje", String.format("Bienvenido %s, has iniciado sesión con éxito!", username));
+        body.put("mensaje", String.format("Bienvenido %s, has iniciado sesión con éxito!", user.getUsername()));
 
         response.getWriter().write(gson.toJson(body));
         response.setStatus(200);

@@ -8,6 +8,8 @@ import java.util.Optional;
 public interface UsuarioService {
     public Optional<Usuario> buscarPorEmailYPassword(String email, String password);
 
+    public Optional<Usuario> buscarPorEmail(String email);
+
     public Usuario registrarCliente(Usuario usuario);
 
     public Usuario registrarEmpleado(Usuario usuario);
