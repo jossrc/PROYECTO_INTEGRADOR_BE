@@ -20,6 +20,11 @@ public class UsuarioServiceImpl implements UsuarioService  {
     }
 
     @Override
+    public Optional<Usuario> buscarPorEmail(String email) {
+        return repository.findByEmail(email);
+    }
+
+    @Override
     public Usuario registrarCliente(Usuario usuario) {
         return repository.save(usuario);
     }

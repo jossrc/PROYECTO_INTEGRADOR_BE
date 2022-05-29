@@ -39,7 +39,7 @@ public class Usuario implements Serializable {
     private int idRol;
 
     @Column(name="idlocal")
-    private int idLocal;
+    private Integer idLocal;
 
     public Usuario() {
         this.estado = 1;

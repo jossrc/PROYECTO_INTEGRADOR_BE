@@ -1,9 +1,19 @@
 package com.postales.controller;
 
+import com.postales.entity.Usuario;
 import com.postales.service.UsuarioService;
+import com.postales.util.ResponseApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.HashMap;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/api/usuarios")
@@ -12,6 +22,47 @@ public class UsuarioController {
     @Autowired
     private UsuarioService service;
 
+    @PostMapping("/cliente/registrar")
+    public ResponseEntity<ResponseApi<Usuario>> registrarCliente(@RequestBody Usuario usuario) {
+        ResponseApi<Usuario> data = new ResponseApi<>();
+        try {
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            String newPassword = passwordEncoder.encode(usuario.getPassword());
+            usuario.setPassword(newPassword);
+
+            usuario.setDisponible(true);
+            usuario.setEstado(1);
+            usuario.setIdRol(3); // Cliente
+
+            Optional<Usuario> existe = service.buscarPorEmail(usuario.getEmail());
+
+            if (existe.isPresent()) {
+                data.setOk(false);
+                data.setMensaje("Usuario ya se encuentra registrado");
+                return ResponseEntity.ok(data);
+            }
+
+            Usuario registrado = service.registrarCliente(usuario);
+
+            if (registrado == null) {
+                data.setOk(false);
+                data.setMensaje("Hubo un error al intentar registrar al cliente");
+                return ResponseEntity.ok(data);
+            }
+
+            registrado.setPassword(null);
+            data = new ResponseApi<>(true, "Se registró correctamente al cliente", registrado );
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            data.setOk(false);
+            data.setMensaje("Sucedió un error inesperado consulte con su administrador");
+            data.setError(e.getMessage());
+        }
+
+        return ResponseEntity.ok(data);
+
+    }
 
 
 
