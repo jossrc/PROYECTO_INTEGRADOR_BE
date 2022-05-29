@@ -10,9 +10,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class JPAUserDetailsService implements UserDetailsService {
@@ -21,20 +23,18 @@ public class JPAUserDetailsService implements UserDetailsService {
     private UsuarioRepository repository;
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-        // TODO: Obtener desde la base de datos y verificar que el model sea el mismo
-        // TODO: El registrar debe guardar la password usando bcrypt
 
         String correo = username.trim();
 
-        Usuario usuario = new Usuario();
-        usuario.setId(1);
-        usuario.setNombre("Jose");
-        usuario.setApellido("Robles");
-        usuario.setEmail("jose@gmail.com"); // username
-        usuario.setPassword("$2a$12$/BLWh.HU/seSMsFM7tJTQOYf1X41lMlrGpsQ7rMblPpUPv37tYxwO"); // 123456
-        usuario.setDisponible(true);
+        Optional<Usuario> data = repository.findByEmail(correo);
+
+        if(data.isEmpty()) {
+            throw new UsernameNotFoundException("Error correo o contraseña incorrectos");
+        }
+
+        Usuario usuario = data.get();
 
         // Creamos lista de autoridades
         List<GrantedAuthority> authorities = new ArrayList<>();
@@ -46,7 +46,7 @@ public class JPAUserDetailsService implements UserDetailsService {
         }
          */
 
-        authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        authorities.add(new SimpleGrantedAuthority(usuario.getRol().getNombre()));
 
         if(authorities.isEmpty()) {
             throw new UsernameNotFoundException("Error en el Login: usuario con el correo '" + correo + "' no tiene roles asignados!");

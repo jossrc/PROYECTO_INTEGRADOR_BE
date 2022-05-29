@@ -1,5 +1,6 @@
 package com.postales.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,8 +15,7 @@ public class Usuario implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idUsuario")
-    private int id;
+    private int idUsuario;
 
     private String nombre;
     private String apellido;
@@ -29,17 +29,25 @@ public class Usuario implements Serializable {
     @Column(length = 100)
     private String password;
 
+    private String direccion;
+
     private boolean disponible; // Default true
     private int estado; // Default 1
 
-    @Column(name = "idubigeo")
-    private int idUbigeo;
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idUbigeo")
+    private Ubigeo ubigeo;
 
-    @Column(name = "idrol")
-    private int idRol;
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idrol")
+    private Rol rol;
 
-    @Column(name="idlocal")
-    private Integer idLocal;
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idLocal")
+    private Local local;
 
     public Usuario() {
         this.estado = 1;

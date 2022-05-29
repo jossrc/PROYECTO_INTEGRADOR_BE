@@ -43,10 +43,10 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/", "/api/usuarios/cliente/registrar").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
-                .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtService))
                 .addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtService))
+                .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
+                .and()
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }

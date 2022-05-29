@@ -1,5 +1,6 @@
 package com.postales.controller;
 
+import com.postales.entity.Rol;
 import com.postales.entity.Usuario;
 import com.postales.service.UsuarioService;
 import com.postales.util.ResponseApi;
@@ -32,7 +33,10 @@ public class UsuarioController {
 
             usuario.setDisponible(true);
             usuario.setEstado(1);
-            usuario.setIdRol(3); // Cliente
+            Rol rol = new Rol();
+            rol.setId(3);
+            rol.setNombre("ROLE_CLIENTE");
+            usuario.setRol(rol); // Cliente
 
             Optional<Usuario> existe = service.buscarPorEmail(usuario.getEmail());
 
