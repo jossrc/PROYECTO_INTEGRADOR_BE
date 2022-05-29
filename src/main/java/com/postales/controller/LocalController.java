@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +29,7 @@ public class LocalController {
 	
 	@GetMapping
     @ResponseBody
+    @Secured("ROLE_ADMIN")
     public ResponseEntity<List<Local>> listarTodo() {
         List<Local> lista = service.listarTodo();
         return ResponseEntity.ok(lista);
@@ -35,6 +37,7 @@ public class LocalController {
 	
 	@PostMapping
     @ResponseBody
+    @Secured("ROLE_ADMIN")
     public ResponseEntity<HashMap<String, Object>> registrar(@RequestBody Local local) {
         HashMap<String, Object> salida = new HashMap<String, Object>();
         try {
@@ -61,6 +64,7 @@ public class LocalController {
 
     @PutMapping
     @ResponseBody
+    @Secured("ROLE_ADMIN")
     public ResponseEntity<HashMap<String, Object>> actualizar(@RequestBody Local local) {
         HashMap<String, Object> salida = new HashMap<String, Object>();
         try {
@@ -86,6 +90,7 @@ public class LocalController {
 
     @DeleteMapping("/{id}")
     @ResponseBody
+    @Secured("ROLE_ADMIN")
     public ResponseEntity<HashMap<String, Object>> eliminar(@PathVariable int id) {
         HashMap<String, Object> salida = new HashMap<String, Object>();
         try {
