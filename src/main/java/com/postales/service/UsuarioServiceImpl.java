@@ -1,6 +1,7 @@
 package com.postales.service;
 
 import com.postales.entity.Usuario;
+import com.postales.projections.UsuarioInfo;
 import com.postales.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
