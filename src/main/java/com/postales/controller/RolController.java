@@ -4,6 +4,7 @@ import com.postales.entity.Rol;
 import com.postales.service.RolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ public class RolController {
 
     @GetMapping
     @ResponseBody
+    @Secured("ROLE_ADMIN")
     public ResponseEntity<List<Rol>> listadoRoles(){
         List<Rol> lista = service.listar();
         return ResponseEntity.ok(lista);

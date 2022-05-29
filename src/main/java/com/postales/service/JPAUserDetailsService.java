@@ -46,7 +46,7 @@ public class JPAUserDetailsService implements UserDetailsService {
         }
          */
 
-        authorities.add(new SimpleGrantedAuthority("ADMIN"));
+        authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
 
         if(authorities.isEmpty()) {
             throw new UsernameNotFoundException("Error en el Login: usuario con el correo '" + correo + "' no tiene roles asignados!");
