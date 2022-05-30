@@ -2,18 +2,16 @@ package com.postales.controller;
 
 import java.util.List;
 
+import com.postales.util.AppSettings;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.postales.entity.Ubigeo;
 import com.postales.service.UbigeoService;
 
 @RestController
 @RequestMapping("/api/ubigeo")
+@CrossOrigin(origins = AppSettings.URL_CROSS_ORIGIN)
 public class UbigeoController {
 
 	@Autowired
