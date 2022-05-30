@@ -226,7 +226,7 @@ public class UsuarioController {
         return ResponseEntity.ok(data);
     }
 
-    @GetMapping("/empleado/listar")
+    @GetMapping("/cliente/listar")
     @Secured("ROLE_ADMIN")
     @Transactional(readOnly = true)
     public ResponseEntity<ResponseApi<Usuario>> listarClientes() {
