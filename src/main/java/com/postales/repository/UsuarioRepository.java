@@ -2,11 +2,21 @@ package com.postales.repository;
 
 import com.postales.entity.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     public Optional<Usuario> findByEmailAndPassword(String email, String password);
+
+    public Optional<Usuario> findByEmail(String email);
+
+    @Query("select u from Usuario u where u.rol.id in (1,2)")
+    public List<Usuario> listarEmpleados();
+
+    @Query("select u from Usuario u where u.rol.id = 3")
+    public List<Usuario> listarClientes();
 
 }
