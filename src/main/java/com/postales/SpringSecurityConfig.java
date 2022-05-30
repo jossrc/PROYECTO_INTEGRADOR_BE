@@ -47,7 +47,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtService))
                 .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
                 .and()
-                .csrf().disable()
+                .csrf().disable().cors().and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
