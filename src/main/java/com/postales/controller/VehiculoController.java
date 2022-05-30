@@ -45,7 +45,7 @@ public class VehiculoController {
 				if (objSalida == null) {
 					salida.put("mensaje", "Error en el registro");
 				} else {
-					salida.put("mensaje", "Registro exitoso");
+					salida.put("mensaje", "¡Vehículo registrado con éxito!");
 				}
 			} else {
 				salida.put("mensaje", "Vehículo ya existe");
@@ -68,12 +68,12 @@ public class VehiculoController {
 			if (obj.isPresent()) {
 				Vehiculo objSalida = repositoryService.updateVehiculo(vehiculo);
 				if (objSalida == null) {
-					salida.put("mensaje", "Error al actualizar");
+					salida.put("mensaje", "¡Error al actualizar!");
 				} else {
-					salida.put("mensaje", "Se actualizo correctamente");
+					salida.put("mensaje", "¡Vehículo actualizado con éxito");
 				}
 			} else {
-				salida.put("mensaje", "Vehículo no existe");
+				salida.put("mensaje", "¡Vehículo no existe!");
 			}
 
 		} catch (Exception e) {
@@ -96,7 +96,7 @@ public class VehiculoController {
 				if (eliminado == null) {
 					salida.put("mensaje", "¡No se pudo eliminar el vehículo!");
 				} else {
-					salida.put("mensaje", "¡Vehículo " + obj.getModelo() + " eliminado con éxito!");
+					salida.put("mensaje", "¡Vehículo eliminado con éxito!");
 				}
 			} else {
 				salida.put("mensaje", "Código ingresado no existe:  " + id);
