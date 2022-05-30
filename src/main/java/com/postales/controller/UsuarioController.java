@@ -193,5 +193,71 @@ public class UsuarioController {
         return ResponseEntity.ok(data);
     }
 
+    @GetMapping("/empleado/listar")
+    @Secured("ROLE_ADMIN")
+    @Transactional(readOnly = true)
+    public ResponseEntity<ResponseApi<Usuario>> listarEmpleados() {
+        ResponseApi<Usuario> data = new ResponseApi<>();
+        try {
+            List<Usuario> usuarios = service.listarEmpleados();
+
+            data.setOk(true);
+
+            if (usuarios.size() <= 0) {
+                data.setMensaje("No se encontraron resultados");
+            } else {
+                if (usuarios.size() == 1) {
+                    data.setMensaje("Se encontró un registro");
+                } else {
+                    data.setMensaje("Se encontraron " + usuarios.size() + " registros");
+                }
+            }
+
+            List<Usuario> usuariosNoPassword = usuarios.stream().map( u -> new Usuario(u)).collect(Collectors.toList());
+            data.setDatos(usuariosNoPassword);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            data.setOk(false);
+            data.setMensaje("Sucedió un error inesperado consulte con su administrador");
+            data.setError(e.getMessage());
+        }
+
+        return ResponseEntity.ok(data);
+    }
+
+    @GetMapping("/empleado/listar")
+    @Secured("ROLE_ADMIN")
+    @Transactional(readOnly = true)
+    public ResponseEntity<ResponseApi<Usuario>> listarClientes() {
+        ResponseApi<Usuario> data = new ResponseApi<>();
+        try {
+            List<Usuario> usuarios = service.listarClientes();
+
+            data.setOk(true);
+
+            if (usuarios.size() <= 0) {
+                data.setMensaje("No se encontraron resultados");
+            } else {
+                if (usuarios.size() == 1) {
+                    data.setMensaje("Se encontró un registro");
+                } else {
+                    data.setMensaje("Se encontraron " + usuarios.size() + " registros");
+                }
+            }
+
+            List<Usuario> usuariosNoPassword = usuarios.stream().map( u -> new Usuario(u)).collect(Collectors.toList());
+            data.setDatos(usuariosNoPassword);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            data.setOk(false);
+            data.setMensaje("Sucedió un error inesperado consulte con su administrador");
+            data.setError(e.getMessage());
+        }
+
+        return ResponseEntity.ok(data);
+    }
+
 
 }

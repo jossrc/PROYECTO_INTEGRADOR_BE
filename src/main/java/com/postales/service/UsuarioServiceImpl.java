@@ -1,7 +1,6 @@
 package com.postales.service;
 
 import com.postales.entity.Usuario;
-import com.postales.projections.UsuarioInfo;
 import com.postales.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,5 +37,15 @@ public class UsuarioServiceImpl implements UsuarioService  {
     @Override
     public List<Usuario> listarUsuarios() {
         return repository.findAll();
+    }
+
+    @Override
+    public List<Usuario> listarEmpleados() {
+        return repository.listarEmpleados();
+    }
+
+    @Override
+    public List<Usuario> listarClientes() {
+        return repository.listarClientes();
     }
 }

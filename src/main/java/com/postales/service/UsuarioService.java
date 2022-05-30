@@ -1,7 +1,6 @@
 package com.postales.service;
 
 import com.postales.entity.Usuario;
-import com.postales.projections.UsuarioInfo;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,5 +15,9 @@ public interface UsuarioService {
     public Usuario registrarEmpleado(Usuario usuario);
 
     public List<Usuario> listarUsuarios();
+
+    public List<Usuario> listarEmpleados();
+
+    public List<Usuario> listarClientes();
 
 }
