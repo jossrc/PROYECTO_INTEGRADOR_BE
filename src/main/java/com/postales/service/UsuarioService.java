@@ -14,10 +14,14 @@ public interface UsuarioService {
 
     public Usuario registrarEmpleado(Usuario usuario);
 
+    public Usuario actualizarEmpleado(Usuario usuario);
+
     public List<Usuario> listarUsuarios();
 
     public List<Usuario> listarEmpleados();
 
     public List<Usuario> listarClientes();
+
+    public Optional<Usuario> obtenerEmpleado(int id);
 
 }

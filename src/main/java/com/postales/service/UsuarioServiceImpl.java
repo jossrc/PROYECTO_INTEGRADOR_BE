@@ -35,6 +35,11 @@ public class UsuarioServiceImpl implements UsuarioService  {
     }
 
     @Override
+    public Usuario actualizarEmpleado(Usuario usuario) {
+        return repository.save(usuario);
+    }
+
+    @Override
     public List<Usuario> listarUsuarios() {
         return repository.findAll();
     }
@@ -47,5 +52,10 @@ public class UsuarioServiceImpl implements UsuarioService  {
     @Override
     public List<Usuario> listarClientes() {
         return repository.listarClientes();
+    }
+
+    @Override
+    public Optional<Usuario> obtenerEmpleado(int id) {
+        return repository.obtenerEmpleado(id);
     }
 }

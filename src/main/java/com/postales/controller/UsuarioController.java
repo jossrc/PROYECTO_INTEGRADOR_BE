@@ -15,6 +15,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -156,6 +158,129 @@ public class UsuarioController {
 
         return ResponseEntity.ok(data);
 
+    }
+
+    @PutMapping("/empleado/actualizar/{id}")
+    @Secured("ROLE_ADMIN")
+    @Transactional
+    public ResponseEntity<ResponseApi<Usuario>> actualizarEmpleado(@PathVariable("id") int empleadoId ,@RequestBody Usuario usuario) {
+        ResponseApi<Usuario> data = new ResponseApi<>();
+
+        try {
+            Optional<Usuario> encontrado = service.obtenerEmpleado(empleadoId);
+
+            if (encontrado.isEmpty()) {
+                data.setOk(false);
+                data.setMensaje("Empleado no existe o no está disponible");
+                return ResponseEntity.ok(data);
+            }
+
+            Usuario empleado = encontrado.get();
+
+            if (usuario.getPassword() == null) {
+                usuario.setPassword(empleado.getPassword());
+            } else {
+                BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                String newPassword = passwordEncoder.encode(usuario.getPassword());
+                usuario.setPassword(newPassword);
+            }
+
+            usuario.setDisponible(true);
+            usuario.setEstado(1);
+
+            Optional<Usuario> existe = service.buscarPorEmail(usuario.getEmail());
+
+            if (existe.isPresent()) {
+                if (existe.get().getIdUsuario() != empleadoId) {
+                    data.setOk(false);
+                    data.setMensaje("Correo electrónico ya se encuentra en uso");
+                    return ResponseEntity.ok(data);
+                }
+            }
+
+            if (usuario.getUbigeo() == null) {
+                data.setOk(false);
+                data.setMensaje("Se requiere ingresar un ubigeo válido");
+                return ResponseEntity.ok(data);
+            }
+
+            if (usuario.getRol() == null) {
+                data.setOk(false);
+                data.setMensaje("Se requiere ingresar un rol válido");
+                return ResponseEntity.ok(data);
+            }
+
+            if (usuario.getRol().getId() == 2) {
+                if (usuario.getLocal() == null) {
+                    data.setOk(false);
+                    data.setMensaje("El empleado requiere de un local");
+                    return ResponseEntity.ok(data);
+                }
+            }
+
+            if (usuario.getRol().getId() == 3) {
+                if (usuario.getLocal() != null) {
+                    data.setOk(false);
+                    data.setMensaje("El cliente no puede estar relacionado a un local");
+                    return ResponseEntity.ok(data);
+                }
+            }
+
+            usuario.setIdUsuario(empleadoId);
+            Usuario actualizado = service.actualizarEmpleado(usuario);
+
+            if (actualizado == null) {
+                data.setOk(false);
+                data.setMensaje("Hubo un error al intentar actualizar al empleado");
+                return ResponseEntity.ok(data);
+            }
+            Usuario enviar = new Usuario(actualizado);
+            data = new ResponseApi<>(true, "Se actualizó correctamente al empleado", enviar );
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            data.setOk(false);
+            data.setMensaje("Sucedió un error inesperado consulte con su administrador");
+            data.setError(e.getMessage());
+        }
+
+        return ResponseEntity.ok(data);
+    }
+
+    @DeleteMapping("/empleado/eliminar/{id}")
+    @ResponseBody
+    @Secured("ROLE_ADMIN")
+    @Transactional
+    public ResponseEntity<HashMap<String, Object>> eliminarEmpleado(@PathVariable int id) {
+        HashMap<String, Object> salida = new HashMap<String, Object>();
+        salida.put("objeto", null);
+        salida.put("datos", new ArrayList<>());
+        try {
+            Optional<Usuario> optional = service.obtenerEmpleado(id);
+            if (optional.isPresent()) {
+                Usuario empleado = optional.get();
+                empleado.setEstado(0);
+                empleado.setDisponible(false);
+                Usuario eliminado = service.actualizarEmpleado(empleado);
+                if (eliminado != null) {
+                    salida.put("ok", true);
+                    salida.put("mensaje", "No se pudo eliminar al empleado");
+                } else {
+                    salida.put("ok", false);
+                    salida.put("mensaje", "No se pudo eliminar al empleado");
+                }
+
+            } else {
+                salida.put("ok", false);
+                salida.put("mensaje", "El empleado con ID " + id + " no existe");
+            }
+
+        } catch (Exception e) {
+            salida.put("ok", false);
+            salida.put("mensaje", "Sucedió un error inesperado consulte con su administrador");
+        }
+
+        return ResponseEntity.ok(salida);
     }
 
     @GetMapping
