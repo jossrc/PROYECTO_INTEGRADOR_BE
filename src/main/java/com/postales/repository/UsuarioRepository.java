@@ -13,4 +13,13 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     public Optional<Usuario> findByEmail(String email);
 
+    @Query("select u from Usuario u where u.rol.id in (1,2)")
+    public List<Usuario> listarEmpleados();
+
+    @Query("select u from Usuario u where u.rol.id = 3")
+    public List<Usuario> listarClientes();
+
+    @Query("select u from Usuario u where u.idUsuario = ?1 and u.rol.id in (1,2) and u.disponible = true")
+    public Optional<Usuario> obtenerEmpleado(int id);
+
 }

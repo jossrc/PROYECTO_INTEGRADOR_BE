@@ -17,7 +17,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         Map<String, Object> result = new HashMap<>();
-        System.out.println("LLega aca?");
+        System.out.println("Acceso denegado");
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(403);
         result.put("timestamp", new Date());

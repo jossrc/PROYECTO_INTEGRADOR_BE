@@ -10,43 +10,43 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
-import com.postales.entity.Local;
-import com.postales.service.LocalService;
+import com.postales.entity.CategoriaPaquete;
+import com.postales.service.CategoriaPaqueteService;
 
 @RestController
-@RequestMapping("/api/local")
+@RequestMapping("/api/categoriaPaquete")
 @CrossOrigin(origins = AppSettings.URL_CROSS_ORIGIN)
-public class LocalController {
+public class CategoriaPaqueteController {
 
 	@Autowired
-	private LocalService service;
+	private CategoriaPaqueteService service;
 	
 	@GetMapping
     @ResponseBody
     @Secured("ROLE_ADMIN")
-    public ResponseEntity<List<Local>> listarTodo() {
-        List<Local> lista = service.listarTodo();
+    public ResponseEntity<List<CategoriaPaquete>> listarTodo() {
+        List<CategoriaPaquete> lista = service.listarTodo();
         return ResponseEntity.ok(lista);
     }
 	
 	@PostMapping
     @ResponseBody
     @Secured("ROLE_ADMIN")
-    public ResponseEntity<HashMap<String, Object>> registrar(@RequestBody Local local) {
+    public ResponseEntity<HashMap<String, Object>> registrar(@RequestBody CategoriaPaquete cpaquete) {
         HashMap<String, Object> salida = new HashMap<String, Object>();
         try {
-            Optional<Local> obj = service.buscarPorId(local.getIdLocal());
+            Optional<CategoriaPaquete> obj = service.buscarPorId(cpaquete.getIdCategoria());
 
             if (obj.isEmpty()) {
-                local.setEstado(1);
-                Local objSalida = service.registrar(local);
+                cpaquete.setEstado(1);
+                CategoriaPaquete objSalida = service.registrar(cpaquete);
                 if (objSalida == null) {
                     salida.put("mensaje", "Error en el registro");
                 } else {
                     salida.put("mensaje", "Registro exitoso");
                 }
             } else {
-                salida.put("mensaje", "Local ya existe");
+                salida.put("mensaje", "Categoria paquete ya existe");
             }
 
         } catch (Exception e) {
@@ -59,20 +59,20 @@ public class LocalController {
     @PutMapping
     @ResponseBody
     @Secured("ROLE_ADMIN")
-    public ResponseEntity<HashMap<String, Object>> actualizar(@RequestBody Local local) {
+    public ResponseEntity<HashMap<String, Object>> actualizar(@RequestBody CategoriaPaquete cpaquete) {
         HashMap<String, Object> salida = new HashMap<String, Object>();
         try {
-            Optional<Local> obj = service.buscarPorId(local.getIdLocal());
+            Optional<CategoriaPaquete> obj = service.buscarPorId(cpaquete.getIdCategoria());
 
             if (obj.isPresent()) {
-                Local objSalida = service.actualizar(local);
+                CategoriaPaquete objSalida = service.actualizar(cpaquete);
                 if (objSalida == null) {
                     salida.put("mensaje", "Error al actualizar");
                 } else {
                     salida.put("mensaje", "Se actualizo correctamente");
                 }
             } else {
-                salida.put("mensaje", "Local no existe");
+                salida.put("mensaje", "Categoria paquete no existe");
             }
 
         } catch (Exception e) {
@@ -88,11 +88,11 @@ public class LocalController {
     public ResponseEntity<HashMap<String, Object>> eliminar(@PathVariable int id) {
         HashMap<String, Object> salida = new HashMap<String, Object>();
         try {
-            Optional<Local> optional = service.buscarPorId(id);
+            Optional<CategoriaPaquete> optional = service.buscarPorId(id);
             if (optional.isPresent()) {
-                Local obj = optional.get();
+                CategoriaPaquete obj = optional.get();
                 obj.setEstado(0);
-                Local eliminado = service.eliminar(obj);
+                CategoriaPaquete eliminado = service.eliminar(obj);
                 if (eliminado == null) {
                     salida.put("mensaje", "No se pudo eliminar el producto");
                 } else {
