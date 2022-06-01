@@ -27,4 +27,18 @@ public class CategoriaPaquete implements Serializable{
 	private String nombre;
 	private String descripcion;
 	private int estado;
+	
+	public CategoriaPaquete() {
+        this.estado = 1;
+    }
+	
+	public CategoriaPaquete(CategoriaPaquete categoriapaquete) {
+		this.idCategoria = categoriapaquete.getIdCategoria();
+		this.nombre = categoriapaquete.getNombre();
+		this.descripcion = categoriapaquete.getDescripcion();
+		this.estado = categoriapaquete.getEstado();
+	}
+	
+	
+	
 }
