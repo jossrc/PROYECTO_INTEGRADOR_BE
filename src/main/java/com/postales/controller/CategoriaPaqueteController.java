@@ -1,9 +1,9 @@
 package com.postales.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.postales.util.AppSettings;
 import com.postales.util.ResponseApi;
@@ -101,55 +101,90 @@ public class CategoriaPaqueteController {
         return ResponseEntity.ok(data);
     }
 
-    @PutMapping
+	@PutMapping("/actualizar/{id}")
     @ResponseBody
     @Secured("ROLE_ADMIN")
-    public ResponseEntity<HashMap<String, Object>> actualizar(@RequestBody CategoriaPaquete cpaquete) {
-        HashMap<String, Object> salida = new HashMap<String, Object>();
+    public ResponseEntity<ResponseApi<CategoriaPaquete>> actualizar(@PathVariable("id") int idCategoriaPaquete ,@RequestBody CategoriaPaquete cpaquete) {
+		ResponseApi<CategoriaPaquete> data = new ResponseApi<>();
         try {
-            Optional<CategoriaPaquete> obj = service.buscarPorId(cpaquete.getIdCategoria());
+            Optional<CategoriaPaquete> encontrado = service.buscarPorId(idCategoriaPaquete);
 
-            if (obj.isPresent()) {
-                CategoriaPaquete objSalida = service.actualizar(cpaquete);
-                if (objSalida == null) {
-                    salida.put("mensaje", "Error al actualizar");
-                } else {
-                    salida.put("mensaje", "Se actualizo correctamente");
-                }
-            } else {
-                salida.put("mensaje", "Categoria paquete no existe");
+            if (encontrado.isEmpty()) {
+                data.setOk(false);
+                data.setMensaje("Categoria paquete no existe o no está disponible");
+                return ResponseEntity.ok(data);
             }
+             
+            
+            cpaquete.setEstado(1);
+             
+            if(cpaquete.getNombre() == null) {
+            	data.setOk(false);
+                data.setMensaje("Se requiere ingresar un nombre válido");
+                return ResponseEntity.ok(data);
+            }
+            
+            if(cpaquete.getDescripcion() == null) {
+            	data.setOk(false);
+                data.setMensaje("Se requiere ingresar una descripcion válida");
+                return ResponseEntity.ok(data);
+            }
+            
+            
+            cpaquete.setIdCategoria(idCategoriaPaquete);
+            
+            CategoriaPaquete actualizado = service.actualizar(cpaquete);
+
+            if (actualizado == null) {
+                data.setOk(false);
+                data.setMensaje("Hubo un error al intentar actualizar la categoria paquete");
+                return ResponseEntity.ok(data);
+            }
+            CategoriaPaquete enviar = new CategoriaPaquete(actualizado);
+            data = new ResponseApi<>(true, "Se actualizó correctamente la categoria paquete", enviar );
 
         } catch (Exception e) {
             e.printStackTrace();
-            salida.put("mensaje", "Error al actualizar : " + e.getMessage());
+            data.setOk(false);
+            data.setMensaje("Sucedió un error inesperado consulte con su administrador");
+            data.setError(e.getMessage());
         }
-        return ResponseEntity.ok(salida);
+
+        return ResponseEntity.ok(data);
     }
 
-    @DeleteMapping("/{id}")
-    @ResponseBody
-    @Secured("ROLE_ADMIN")
+	@DeleteMapping("/eliminar/{id}")
+	@ResponseBody
+	@Secured("ROLE_ADMIN")
+	@Transactional
     public ResponseEntity<HashMap<String, Object>> eliminar(@PathVariable int id) {
-        HashMap<String, Object> salida = new HashMap<String, Object>();
+		HashMap<String, Object> salida = new HashMap<String, Object>();
+        salida.put("objeto", null);
+        salida.put("datos", new ArrayList<>());
         try {
             Optional<CategoriaPaquete> optional = service.buscarPorId(id);
             if (optional.isPresent()) {
-                CategoriaPaquete obj = optional.get();
-                obj.setEstado(0);
-                CategoriaPaquete eliminado = service.eliminar(obj);
-                if (eliminado == null) {
-                    salida.put("mensaje", "No se pudo eliminar el producto");
+            	CategoriaPaquete cpaquete = optional.get();
+            	cpaquete.setEstado(0);
+            	CategoriaPaquete eliminado = service.actualizar(cpaquete);
+                if (eliminado != null) {
+                    salida.put("ok", true);
+                    salida.put("mensaje", "No se pudo eliminar la categoria paquete");
                 } else {
-                    salida.put("mensaje", "Eliminación exitosa");
+                    salida.put("ok", false);
+                    salida.put("mensaje", "No se pudo eliminar la categoria paquete");
                 }
-            }else {
-                salida.put("mensaje", "El ID no existe : " + id);
+
+            } else {
+                salida.put("ok", false);
+                salida.put("mensaje", "La cateogira paquete con ID " + id + " no existe");
             }
+
         } catch (Exception e) {
-            e.printStackTrace();
-            salida.put("mensaje", "Error en la eliminación " + e.getMessage());
+            salida.put("ok", false);
+            salida.put("mensaje", "Sucedió un error inesperado consulte con su administrador");
         }
+
         return ResponseEntity.ok(salida);
     }
 	
