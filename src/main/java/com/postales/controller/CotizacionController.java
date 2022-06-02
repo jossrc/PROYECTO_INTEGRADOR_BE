@@ -135,18 +135,6 @@ public class CotizacionController {
                 return ResponseEntity.ok(data);
             }
             
-            if (cotizacion.getIdLocal() == 0) {
-                data.setOk(false);
-                data.setMensaje("Se requiere ingresar un local");
-                return ResponseEntity.ok(data);
-            }
-            
-            if (cotizacion.getIdRol() == 0) {
-                data.setOk(false);
-                data.setMensaje("Se requiere ingresar un rol");
-                return ResponseEntity.ok(data);
-            }
-            
             if (cotizacion.getIdPaquete() == 0) {
                 data.setOk(false);
                 data.setMensaje("Se requiere ingresar un paquete");
@@ -214,18 +202,6 @@ public class CotizacionController {
             if (cotizacion.getIdUsuario() == 0) {
                 data.setOk(false);
                 data.setMensaje("Se requiere ingresar un usuario");
-                return ResponseEntity.ok(data);
-            }
-            
-            if (cotizacion.getIdLocal() == 0) {
-                data.setOk(false);
-                data.setMensaje("Se requiere ingresar un local");
-                return ResponseEntity.ok(data);
-            }
-            
-            if (cotizacion.getIdRol() == 0) {
-                data.setOk(false);
-                data.setMensaje("Se requiere ingresar un rol");
                 return ResponseEntity.ok(data);
             }
             
