@@ -27,5 +27,6 @@ public class Cotizacion {
 	private int idUsuario;
 	private int idLocal;
 	private int idRol;
+	private int idPaquete;
 	private int estado;
 }
