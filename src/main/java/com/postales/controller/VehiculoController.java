@@ -4,23 +4,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+import com.postales.util.AppSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.postales.entity.Vehiculo;
 import com.postales.service.VehiculoService;
 
 @RestController
 @RequestMapping("/api/vehiculo")
+@CrossOrigin(origins = AppSettings.URL_CROSS_ORIGIN)
 public class VehiculoController {
 
 	@Autowired
@@ -45,7 +39,7 @@ public class VehiculoController {
 				if (objSalida == null) {
 					salida.put("mensaje", "Error en el registro");
 				} else {
-					salida.put("mensaje", "Registro exitoso");
+					salida.put("mensaje", "¡Vehículo registrado con éxito!");
 				}
 			} else {
 				salida.put("mensaje", "Vehículo ya existe");
@@ -68,12 +62,12 @@ public class VehiculoController {
 			if (obj.isPresent()) {
 				Vehiculo objSalida = repositoryService.updateVehiculo(vehiculo);
 				if (objSalida == null) {
-					salida.put("mensaje", "Error al actualizar");
+					salida.put("mensaje", "¡Error al actualizar!");
 				} else {
-					salida.put("mensaje", "Se actualizo correctamente");
+					salida.put("mensaje", "¡Vehículo actualizado con éxito");
 				}
 			} else {
-				salida.put("mensaje", "Vehículo no existe");
+				salida.put("mensaje", "¡Vehículo no existe!");
 			}
 
 		} catch (Exception e) {
@@ -96,7 +90,7 @@ public class VehiculoController {
 				if (eliminado == null) {
 					salida.put("mensaje", "¡No se pudo eliminar el vehículo!");
 				} else {
-					salida.put("mensaje", "¡Vehículo " + obj.getModelo() + " eliminado con éxito!");
+					salida.put("mensaje", "¡Vehículo eliminado con éxito!");
 				}
 			} else {
 				salida.put("mensaje", "Código ingresado no existe:  " + id);
