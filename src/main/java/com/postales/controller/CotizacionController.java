@@ -1,14 +1,13 @@
 package com.postales.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,12 +29,12 @@ public class CotizacionController {
 	@Autowired
 	private CotizacionService service;
 	
-//	@GetMapping
-//	@ResponseBody
-//	public ResponseEntity<List<Cotizacion>> listadoCotizacones(){
-//		List<Cotizacion> lista = service.listar();
-//		return ResponseEntity.ok(lista);
-//	}
+	/*@GetMapping
+	@ResponseBody
+	public ResponseEntity<List<Cotizacion>> listadoCotizacones(){
+		List<Cotizacion> lista = service.listar();
+		return ResponseEntity.ok(lista);
+	}*/
 	
 	@GetMapping("/listar")
 	@Secured("ROLE_ADMIN")
@@ -67,31 +66,31 @@ public class CotizacionController {
         return ResponseEntity.ok(data);
     }
 	
-//	@PostMapping
-//    @ResponseBody
-//    public ResponseEntity<HashMap<String, Object>> registrar(@RequestBody Cotizacion cotizacion) {
-//        HashMap<String, Object> salida = new HashMap<String, Object>();
-//        try {
-//            Optional<Cotizacion> obj = service.buscarPorId(cotizacion.getIdCotizacion());
-//
-//            if (obj.isEmpty()) {
-//            	cotizacion.setEstado(1);
-//                Cotizacion objSalida = service.registrar(cotizacion);
-//                if (objSalida == null) {
-//                    salida.put("mensaje", "Error en el registro");
-//                } else {
-//                    salida.put("mensaje", "Registro exitoso");
-//                }
-//            } else {
-//                salida.put("mensaje", "Cotizacion ya existe");
-//            }
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            salida.put("mensaje", "Error en el registro : " + e.getMessage());
-//        }
-//        return ResponseEntity.ok(salida);
-//    }
+	/*@PostMapping
+    @ResponseBody
+    public ResponseEntity<HashMap<String, Object>> registrar(@RequestBody Cotizacion cotizacion) {
+        HashMap<String, Object> salida = new HashMap<String, Object>();
+        try {
+            Optional<Cotizacion> obj = service.buscarPorId(cotizacion.getIdCotizacion());
+
+            if (obj.isEmpty()) {
+            	cotizacion.setEstado(1);
+                Cotizacion objSalida = service.registrar(cotizacion);
+                if (objSalida == null) {
+                    salida.put("mensaje", "Error en el registro");
+                } else {
+                    salida.put("mensaje", "Registro exitoso");
+                }
+            } else {
+                salida.put("mensaje", "Cotizacion ya existe");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            salida.put("mensaje", "Error en el registro : " + e.getMessage());
+        }
+        return ResponseEntity.ok(salida);
+    }*/
 	
 	@PostMapping("/registrar")
     @Transactional
@@ -173,7 +172,89 @@ public class CotizacionController {
 
     }
 	
-	@PutMapping
+	@PutMapping("/actualizar/{id}")
+    @Secured("ROLE_ADMIN")
+    @Transactional
+    public ResponseEntity<ResponseApi<Cotizacion>> actualizarCotizacion(@PathVariable("id") int cotizacionId ,@RequestBody Cotizacion cotizacion) {
+        ResponseApi<Cotizacion> data = new ResponseApi<>();
+
+        try {
+            Optional<Cotizacion> encontrado = service.buscarPorId(cotizacionId);
+
+            if (encontrado.isEmpty()) {
+                data.setOk(false);
+                data.setMensaje("Cotizacion no existe o no está disponible");
+                return ResponseEntity.ok(data);
+            }
+            
+            if (cotizacion.getDescripcion() == null) {
+                data.setOk(false);
+                data.setMensaje("Se requiere ingresar una descripción");
+                return ResponseEntity.ok(data);
+            }
+
+            if (cotizacion.getCosto() == 0 ) {
+                data.setOk(false);
+                data.setMensaje("Se requiere un costo");
+                return ResponseEntity.ok(data);
+            }
+            
+            if (cotizacion.getDireccion() == null) {
+                data.setOk(false);
+                data.setMensaje("Se requiere ingresar una direccion");
+                return ResponseEntity.ok(data);
+            }
+            
+            if (cotizacion.getIdUbigeo() == 0) {
+                data.setOk(false);
+                data.setMensaje("Se requiere ingresar un ubigeo");
+                return ResponseEntity.ok(data);
+            }
+            
+            if (cotizacion.getIdUsuario() == 0) {
+                data.setOk(false);
+                data.setMensaje("Se requiere ingresar un usuario");
+                return ResponseEntity.ok(data);
+            }
+            
+            if (cotizacion.getIdLocal() == 0) {
+                data.setOk(false);
+                data.setMensaje("Se requiere ingresar un local");
+                return ResponseEntity.ok(data);
+            }
+            
+            if (cotizacion.getIdRol() == 0) {
+                data.setOk(false);
+                data.setMensaje("Se requiere ingresar un rol");
+                return ResponseEntity.ok(data);
+            }
+            
+            if (cotizacion.getIdPaquete() == 0) {
+                data.setOk(false);
+                data.setMensaje("Se requiere ingresar un paquete");
+                return ResponseEntity.ok(data);
+            }
+
+            cotizacion.setIdCotizacion(cotizacionId);
+            Cotizacion actualizado = service.actualizar(cotizacion);
+
+            if (actualizado == null) {
+                data.setOk(false);
+                data.setMensaje("Hubo un error al intentar actualizar la cotizacion");
+                return ResponseEntity.ok(data);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            data.setOk(false);
+            data.setMensaje("Sucedió un error inesperado consulte con su administrador");
+            data.setError(e.getMessage());
+        }
+
+        return ResponseEntity.ok(data);
+    }
+	
+	/*@PutMapping
     @ResponseBody
     public ResponseEntity<HashMap<String, Object>> actualizar(@RequestBody Cotizacion cotizacion) {
         HashMap<String, Object> salida = new HashMap<String, Object>();
@@ -196,9 +277,44 @@ public class CotizacionController {
             salida.put("mensaje", "Error al actualizar : " + e.getMessage());
         }
         return ResponseEntity.ok(salida);
+    }*/
+	
+	@DeleteMapping("/eliminar/{id}")
+    @ResponseBody
+    @Secured("ROLE_ADMIN")
+    @Transactional
+    public ResponseEntity<HashMap<String, Object>> eliminarCotizacion(@PathVariable int id) {
+        HashMap<String, Object> salida = new HashMap<String, Object>();
+        salida.put("objeto", null);
+        salida.put("datos", new ArrayList<>());
+        try {
+            Optional<Cotizacion> optional = service.buscarPorId(id);
+            if (optional.isPresent()) {
+            	Cotizacion cotizacion = optional.get();
+            	cotizacion.setEstado(0);
+                Cotizacion eliminado = service.actualizar(cotizacion);
+                if (eliminado != null) {
+                    salida.put("ok", true);
+                    salida.put("mensaje", "No se pudo eliminar la cotizacion");
+                } else {
+                    salida.put("ok", false);
+                    salida.put("mensaje", "No se pudo eliminar la cotizacion");
+                }
+
+            } else {
+                salida.put("ok", false);
+                salida.put("mensaje", "La cotizacion con ID " + id + " no existe");
+            }
+
+        } catch (Exception e) {
+            salida.put("ok", false);
+            salida.put("mensaje", "Sucedió un error inesperado consulte con su administrador");
+        }
+
+        return ResponseEntity.ok(salida);
     }
 	
-	@DeleteMapping("/{id}")
+	/*@DeleteMapping("/{id}")
     @ResponseBody
     public ResponseEntity<HashMap<String, Object>> eliminar(@PathVariable int id) {
         HashMap<String, Object> salida = new HashMap<String, Object>();
@@ -221,6 +337,6 @@ public class CotizacionController {
             salida.put("mensaje", "Error en la eliminación " + e.getMessage());
         }
         return ResponseEntity.ok(salida);
-    }
+    }*/
 	
 }
