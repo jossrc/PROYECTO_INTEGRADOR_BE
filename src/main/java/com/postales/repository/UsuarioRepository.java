@@ -13,10 +13,10 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     public Optional<Usuario> findByEmail(String email);
 
-    @Query("select u from Usuario u where u.rol.id in (1,2)")
+    @Query("select u from Usuario u where u.rol.id in (1,2) and u.disponible = true")
     public List<Usuario> listarEmpleados();
 
-    @Query("select u from Usuario u where u.rol.id = 3")
+    @Query("select u from Usuario u where u.rol.id = 3 and u.disponible = true")
     public List<Usuario> listarClientes();
 
     @Query("select u from Usuario u where u.idUsuario = ?1 and u.rol.id in (1,2) and u.disponible = true")
