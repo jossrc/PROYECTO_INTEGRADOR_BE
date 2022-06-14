@@ -30,6 +30,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private final JWTService jwtService;
 
     public JWTAuthenticationFilter(AuthenticationManager authenticationManager, JWTService jwtService) {
+        System.out.println("En el JWTAuthenticationFilter");
         this.authenticationManager = authenticationManager;
         setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/api/login", "POST"));
         this.jwtService = jwtService;
@@ -37,7 +38,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-
+        System.out.println("En el attemptAuthentication");
         Gson gson  = new Gson();
         // Obtiene por el form-data
         String username = obtainUsername(request); // username
@@ -50,9 +51,11 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         if (username.isEmpty() && password.isEmpty()) {
             // Busca por el body
-            Usuario usuario;
+
             try {
+                Usuario usuario;
                 String jsonString = request.getReader().lines().collect(Collectors.joining());
+                System.out.println( "LOGIN " + jsonString );
                 usuario = gson.fromJson( jsonString, Usuario.class);
                 username = usuario.getEmail();
                 password = usuario.getPassword();

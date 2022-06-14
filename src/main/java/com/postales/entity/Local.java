@@ -41,4 +41,7 @@ public class Local implements Serializable{
 	@JoinColumn(name = "idUbigeo")
 	private Ubigeo ubigeo;
 	
+	
+	
+	
 }

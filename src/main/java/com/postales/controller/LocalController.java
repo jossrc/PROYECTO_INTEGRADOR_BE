@@ -1,13 +1,17 @@
 package com.postales.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
 import com.postales.util.AppSettings;
+import com.postales.util.ResponseApi;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import com.postales.entity.Local;
@@ -20,92 +24,203 @@ public class LocalController {
 
 	@Autowired
 	private LocalService service;
-	
-	@GetMapping
-    @ResponseBody
-    @Secured("ROLE_ADMIN")
-    public ResponseEntity<List<Local>> listarTodo() {
-        List<Local> lista = service.listarTodo();
-        return ResponseEntity.ok(lista);
-    }
-	
-	@PostMapping
-    @ResponseBody
-    @Secured("ROLE_ADMIN")
-    public ResponseEntity<HashMap<String, Object>> registrar(@RequestBody Local local) {
-        HashMap<String, Object> salida = new HashMap<String, Object>();
-        try {
-            Optional<Local> obj = service.buscarPorId(local.getIdLocal());
 
-            if (obj.isEmpty()) {
-                local.setEstado(1);
-                Local objSalida = service.registrar(local);
-                if (objSalida == null) {
-                    salida.put("mensaje", "Error en el registro");
-                } else {
-                    salida.put("mensaje", "Registro exitoso");
-                }
-            } else {
-                salida.put("mensaje", "Local ya existe");
-            }
+	@GetMapping("/listar")
+	@Secured("ROLE_ADMIN")
+	@Transactional(readOnly = true)
+	public ResponseEntity<ResponseApi<Local>> listarTodo() {
+		ResponseApi<Local> data = new ResponseApi<>();
+		try {
+			List<Local> locales = service.listarTodo();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            salida.put("mensaje", "Error en el registro : " + e.getMessage());
-        }
-        return ResponseEntity.ok(salida);
-    }
+			data.setOk(true);
 
-    @PutMapping
-    @ResponseBody
-    @Secured("ROLE_ADMIN")
-    public ResponseEntity<HashMap<String, Object>> actualizar(@RequestBody Local local) {
-        HashMap<String, Object> salida = new HashMap<String, Object>();
-        try {
-            Optional<Local> obj = service.buscarPorId(local.getIdLocal());
+			if (locales.size() <= 0) {
+				data.setMensaje("No se encontraron resultados");
+			} else {
+				if (locales.size() == 1) {
+					data.setMensaje("Se encontró un registro");
+				} else {
+					data.setMensaje("Se encontraron " + locales.size() + " registros");
+				}
+			}
 
-            if (obj.isPresent()) {
-                Local objSalida = service.actualizar(local);
-                if (objSalida == null) {
-                    salida.put("mensaje", "Error al actualizar");
-                } else {
-                    salida.put("mensaje", "Se actualizo correctamente");
-                }
-            } else {
-                salida.put("mensaje", "Local no existe");
-            }
+			data.setDatos(locales);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			data.setOk(false);
+			data.setMensaje("Sucedió un error inesperado consulte con su administrador");
+			data.setError(e.getMessage());
+		}
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            salida.put("mensaje", "Error al actualizar : " + e.getMessage());
-        }
-        return ResponseEntity.ok(salida);
-    }
+		return ResponseEntity.ok(data);
+	}
 
-    @DeleteMapping("/{id}")
-    @ResponseBody
-    @Secured("ROLE_ADMIN")
-    public ResponseEntity<HashMap<String, Object>> eliminar(@PathVariable int id) {
-        HashMap<String, Object> salida = new HashMap<String, Object>();
-        try {
-            Optional<Local> optional = service.buscarPorId(id);
-            if (optional.isPresent()) {
-                Local obj = optional.get();
-                obj.setEstado(0);
-                Local eliminado = service.eliminar(obj);
-                if (eliminado == null) {
-                    salida.put("mensaje", "No se pudo eliminar el producto");
-                } else {
-                    salida.put("mensaje", "Eliminación exitosa");
-                }
-            }else {
-                salida.put("mensaje", "El ID no existe : " + id);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            salida.put("mensaje", "Error en la eliminación " + e.getMessage());
-        }
-        return ResponseEntity.ok(salida);
-    }
-	
+	@PostMapping("/registrar")
+	@Secured("ROLE_ADMIN")
+	@Transactional
+	public ResponseEntity<ResponseApi<Local>> registrar(@RequestBody Local local) {
+		ResponseApi<Local> data = new ResponseApi<>();
+		try {
+			local.setEstado(1);
+			System.out.println(local.getIdLocal());
+			Optional<Local> existe = service.buscarPorId(local.getIdLocal());
+
+			if (existe.isPresent()) {
+				data.setOk(false);
+				data.setMensaje("Local ya se encuentra registrado");
+				return ResponseEntity.ok(data);
+			}
+
+			if (local.getNombre() == null) {
+				data.setOk(false);
+				data.setMensaje("Se requiere ingresar un nombre válido");
+				return ResponseEntity.ok(data);
+			}
+
+			if (local.getHora_inicio() == null) {
+				data.setOk(false);
+				data.setMensaje("Se requiere ingresar una hora inicio válido");
+				return ResponseEntity.ok(data);
+			}
+
+			if (local.getHora_fin() == null) {
+				data.setOk(false);
+				data.setMensaje("Se requiere ingresar una hora final válido");
+				return ResponseEntity.ok(data);
+			}
+
+			if (local.getDireccion() == null) {
+				data.setOk(false);
+				data.setMensaje("Se requiere ingresar una dirección válido");
+				return ResponseEntity.ok(data);
+			}
+			if (local.getUbigeo() == null) {
+				data.setOk(false);
+				data.setMensaje("Se requiere ingresar una ubigeo válido");
+				return ResponseEntity.ok(data);
+			}
+			Local registrado = service.registrar(local);
+			
+			
+			if (registrado == null) {
+				
+				data.setOk(false);
+				data.setMensaje("Hubo un error al intentar registrar el local");
+				return ResponseEntity.ok(data);
+			}
+			data.setMensaje("Se registró correctamente el local");
+
+		} catch (Exception e) {
+			
+			data.setOk(false);
+			data.setMensaje("Sucedió un error inesperado consulte con su administrador");
+			data.setError(e.getMessage());
+		}
+
+		return ResponseEntity.ok(data);
+	}
+
+	@PutMapping("/actualizar/{id}")
+	@Secured("ROLE_ADMIN")
+	@Transactional
+	public ResponseEntity<ResponseApi<Local>> actualizar(@PathVariable("id") int idLocal, @RequestBody Local local) {
+		ResponseApi<Local> data = new ResponseApi<>();
+		try {
+
+			local.setEstado(1);
+
+			Optional<Local> existe = service.buscarPorId(local.getIdLocal());
+
+			if (existe.isPresent()) {
+				data.setOk(false);
+				data.setMensaje("Local ya se encuentra registrado");
+				return ResponseEntity.ok(data);
+			}
+
+			if (local.getNombre() == null) {
+				data.setOk(false);
+				data.setMensaje("Se requiere ingresar un nombre válido");
+				return ResponseEntity.ok(data);
+			}
+
+			if (local.getHora_inicio() == null) {
+				data.setOk(false);
+				data.setMensaje("Se requiere ingresar una hora inicio válido");
+				return ResponseEntity.ok(data);
+			}
+
+			if (local.getHora_fin() == null) {
+				data.setOk(false);
+				data.setMensaje("Se requiere ingresar una hora final válido");
+				return ResponseEntity.ok(data);
+			}
+
+			if (local.getDireccion() == null) {
+				data.setOk(false);
+				data.setMensaje("Se requiere ingresar una dirección válido");
+				return ResponseEntity.ok(data);
+			}
+			if (local.getUbigeo() == null) {
+				data.setOk(false);
+				data.setMensaje("Se requiere ingresar una ubigeo válido");
+				return ResponseEntity.ok(data);
+			}
+
+			local.setIdLocal(idLocal);
+
+			Local actualizado = service.actualizar(local);
+
+			if (actualizado == null) {
+				data.setOk(false);
+				data.setMensaje("Hubo un error al intentar registrar el local");
+				return ResponseEntity.ok(data);
+			}
+
+			data.setMensaje("Se actualizo correctamente el local");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			data.setOk(false);
+			data.setMensaje("Sucedió un error inesperado consulte con su administrador");
+			data.setError(e.getMessage());
+		}
+
+		return ResponseEntity.ok(data);
+	}
+
+	@DeleteMapping("/eliminar/{id}")
+	@ResponseBody
+	@Secured("ROLE_ADMIN")
+	@Transactional
+	public ResponseEntity<HashMap<String, Object>> eliminar(@PathVariable int id) {
+		HashMap<String, Object> salida = new HashMap<String, Object>();
+		salida.put("objeto", null);
+		salida.put("datos", new ArrayList<>());
+		try {
+			Optional<Local> optional = service.buscarPorId(id);
+			if (optional.isPresent()) {
+				Local obj = optional.get();
+				obj.setEstado(0);
+				Local eliminado = service.eliminar(obj);
+				if (eliminado == null) {
+					salida.put("ok", false);
+					salida.put("mensaje", "No se pudo eliminar el local");
+				} else {
+					salida.put("ok", true);
+					salida.put("mensaje", "Eliminación exitosa");
+				}
+			} else {
+				salida.put("ok", false);
+				salida.put("mensaje", "El ID no existe : " + id);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			salida.put("ok", false);
+			salida.put("mensaje", "Error en la eliminación " + e.getMessage());
+		}
+		return ResponseEntity.ok(salida);
+	}
+
 }
