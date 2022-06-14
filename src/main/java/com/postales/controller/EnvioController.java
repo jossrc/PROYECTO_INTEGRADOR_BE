@@ -5,6 +5,7 @@ import java.util.List;
 import com.postales.util.AppSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +25,7 @@ public class EnvioController {
 	private EnvioService serv;
 	
 	@GetMapping("/listaEnvios")
+	@Secured("ROLE_ADMIN")
 	@ResponseBody
 	public ResponseEntity<List<Envio>> listEnvios() {
 		
