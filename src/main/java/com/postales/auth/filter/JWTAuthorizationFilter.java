@@ -20,11 +20,14 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
     public JWTAuthorizationFilter(AuthenticationManager authenticationManager, JWTService jwtService) {
         super(authenticationManager);
+        System.out.println("En JWTAuthorizationFilter");
         this.jwtService = jwtService;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+        System.out.println("Paso?");
+        System.out.println("En doFilterInternal");
         String token = request.getHeader(JWTServiceImpl.HEADER_STRING);
         if (!requiresAuthentication(token)) {
             chain.doFilter(request, response);

@@ -3,6 +3,7 @@ package com.postales;
 import com.postales.auth.custom.CustomAuthenticationEntryPoint;
 import com.postales.auth.filter.JWTAuthenticationFilter;
 import com.postales.auth.filter.JWTAuthorizationFilter;
+import com.postales.auth.filter.SimpleCORSFilter;
 import com.postales.auth.service.JWTService;
 import com.postales.service.JPAUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,10 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private JWTService jwtService;
 
+
+    @Autowired
+    private SimpleCORSFilter corsFilter;
+
     @Bean
     public static BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -39,15 +44,17 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        http.authorizeRequests().antMatchers(
-                "/", "/api/usuarios/cliente/registrar").permitAll()
+        http
+                .authorizeRequests().antMatchers(
+                "/", "/api/usuarios/cliente/registrar", "/api/ubigeo/**").permitAll()
                 .anyRequest().authenticated()
-                .and()
+                .and() //.addFilterBefore(corsFilter, ChannelProcessingFilter.class)
                 .addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtService))
                 .addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtService))
                 .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
                 .and()
-                .csrf().disable().cors().and()
+                .csrf()
+                .disable().cors().and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
