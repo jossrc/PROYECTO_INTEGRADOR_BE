@@ -54,7 +54,7 @@ public class CategoriaPaqueteController {
         }
 
         return ResponseEntity.ok(data);
-    }
+	}
 	
 	@PostMapping("/registrar")
     @Secured("ROLE_ADMIN")

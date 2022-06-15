@@ -64,7 +64,7 @@ public class CotizacionController {
         }
 
         return ResponseEntity.ok(data);
-    }
+	}
 	
 	/*@PostMapping
     @ResponseBody

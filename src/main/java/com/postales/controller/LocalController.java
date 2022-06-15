@@ -101,6 +101,8 @@ public class LocalController {
 				data.setMensaje("Se requiere ingresar una ubigeo válido");
 				return ResponseEntity.ok(data);
 			}
+			
+			System.out.println(local.toString());
 			Local registrado = service.registrar(local);
 			
 			
