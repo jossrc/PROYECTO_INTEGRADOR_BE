@@ -24,4 +24,6 @@ public interface UsuarioService {
 
     public Optional<Usuario> obtenerEmpleado(int id);
 
+    public int obtenerIdUsuarioPeticion();
+
 }

@@ -4,10 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.postales.auth.SimpleGrantedAuthorityMixin;
 
+import com.postales.entity.Usuario;
+import com.postales.service.UsuarioService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,6 +23,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Optional;
 
 @Component
 public class JWTServiceImpl implements JWTService{
@@ -31,6 +35,9 @@ public class JWTServiceImpl implements JWTService{
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String HEADER_STRING = "Authorization";
 
+    @Autowired
+    private UsuarioService service;
+
     @Override
     public String create(Authentication auth) throws IOException {
         Gson gson = new Gson();
@@ -40,8 +47,15 @@ public class JWTServiceImpl implements JWTService{
 
         Collection<? extends GrantedAuthority> roles = auth.getAuthorities();
 
+        Optional<Usuario> usuario = service.buscarPorEmail(username);
+        int usuarioId = -1;
+        if (usuario.isPresent()) {
+            usuarioId = usuario.get().getIdUsuario();
+        }
+
         Claims claims = Jwts.claims();
         claims.put("authorities", gson.toJson(roles));
+        claims.put("usuarioId", usuarioId);
 
         // Retorna Token
         return Jwts.builder()
@@ -88,6 +102,8 @@ public class JWTServiceImpl implements JWTService{
         );
     }
 
+
+
     @Override
     public String resolve(String token) {
         if (token != null && token.startsWith(TOKEN_PREFIX)) {
@@ -95,5 +111,12 @@ public class JWTServiceImpl implements JWTService{
         }
 
         return null;
+    }
+
+    @Override
+    public int getUsuarioId(String token) {
+        Object usuarioId =  getClaims(token).get("usuarioId");
+
+        return (int) usuarioId;
     }
 }
