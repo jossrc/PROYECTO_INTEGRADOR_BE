@@ -8,6 +8,8 @@ public interface EnvioService {
 
 	public abstract List<Envio> listarEnvio();
 	
+	public abstract List<Envio> listaEnvioUsu(int idUsu);
 	
+	/*public abstract List<Envio> listaPorIdLike(int idUsu);*/
 	
 }
