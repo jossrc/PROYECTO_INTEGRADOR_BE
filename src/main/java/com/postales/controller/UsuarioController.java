@@ -325,6 +325,9 @@ public class UsuarioController {
         try {
             List<Usuario> usuarios = service.listarEmpleados();
 
+            // int usuarioId = service.obtenerIdUsuarioPeticion();
+            // System.out.println("Id del usuario que realiza es : " + usuarioId);
+
             data.setOk(true);
 
             if (usuarios.size() <= 0) {
