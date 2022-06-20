@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.postales.entity.Envio;
 import com.postales.service.EnvioService;
+import com.postales.service.UsuarioService;
 
 @Controller
 @RequestMapping("/api/envios")
@@ -33,6 +34,9 @@ public class EnvioController {
 	
 	@Autowired
 	private EnvioService serv;
+	
+	@Autowired
+	private UsuarioService usuServ;
 	
 	
 	@GetMapping("/listaEnvios")
@@ -72,8 +76,10 @@ public class EnvioController {
 	public ResponseEntity<Map<String, Object>> listEnviosUsu(@RequestParam(value="idUsu", required=false, defaultValue="0") int idUsu) {
 		
 		Map<String, Object> salida = new HashMap<String, Object>();
+		
 		try {
-			List<Envio> lista = serv.listaEnvioUsu(idUsu);
+			System.out.println("Este es el ID del usuario : " + usuServ.obtenerIdUsuarioPeticion());
+			List<Envio> lista = serv.listaEnvioUsu(usuServ.obtenerIdUsuarioPeticion());
 			if(CollectionUtils.isEmpty(lista)) {
 				salida.put("mensaje", "No existe elementos para la consulta");
 			} else {
