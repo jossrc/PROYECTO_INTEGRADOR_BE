@@ -1,6 +1,7 @@
 package com.postales.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -14,13 +15,15 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.postales.entity.Cotizacion;
+import com.postales.entity.Paquete;
+import com.postales.entity.dto.CotizacionDTO;
 import com.postales.service.CotizacionService;
+import com.postales.service.PaqueteService;
 import com.postales.util.ResponseApi;
 
 @Controller
@@ -28,6 +31,9 @@ import com.postales.util.ResponseApi;
 public class CotizacionController {
 	@Autowired
 	private CotizacionService service;
+	
+	@Autowired
+	private PaqueteService servicePaquete;
 	
 	/*@GetMapping
 	@ResponseBody
@@ -94,7 +100,7 @@ public class CotizacionController {
 	
 	@PostMapping("/registrar")
     @Transactional
-    public ResponseEntity<ResponseApi<Cotizacion>> registrarCotizacion(@RequestBody Cotizacion cotizacion) {
+    public ResponseEntity<ResponseApi<Cotizacion>> registrarCotizacion(@RequestBody CotizacionDTO cotizacion) {
         ResponseApi<Cotizacion> data = new ResponseApi<>();
         try {
             Optional<Cotizacion> existe = service.buscarPorId(cotizacion.getIdCotizacion());
@@ -110,12 +116,6 @@ public class CotizacionController {
                 data.setMensaje("Se requiere ingresar una descripción");
                 return ResponseEntity.ok(data);
             }
-
-            if (cotizacion.getCosto() == 0 ) {
-                data.setOk(false);
-                data.setMensaje("Se requiere un costo");
-                return ResponseEntity.ok(data);
-            }
             
             if (cotizacion.getDireccion() == null) {
                 data.setOk(false);
@@ -123,25 +123,68 @@ public class CotizacionController {
                 return ResponseEntity.ok(data);
             }
             
-            if (cotizacion.getIdUbigeo() == 0) {
+            if (cotizacion.getProductos() == null) {
+                data.setOk(false);
+                data.setMensaje("Se requiere ingresar productos");
+                return ResponseEntity.ok(data);
+            }
+            
+            if (cotizacion.getUbigeo() == null) {
                 data.setOk(false);
                 data.setMensaje("Se requiere ingresar un ubigeo");
                 return ResponseEntity.ok(data);
             }
             
-            if (cotizacion.getIdUsuario() == 0) {
+            if (cotizacion.getPesoTotal() < 0) {
                 data.setOk(false);
-                data.setMensaje("Se requiere ingresar un usuario");
+                data.setMensaje("Tiene que ser mayor que 0");
                 return ResponseEntity.ok(data);
             }
             
-            if (cotizacion.getIdPaquete() == 0) {
+            if (cotizacion.getCantidad() < 0) {
                 data.setOk(false);
-                data.setMensaje("Se requiere ingresar un paquete");
+                data.setMensaje("Tiene que ser mayor que 0");
                 return ResponseEntity.ok(data);
             }
+            
+            if (cotizacion.getIdCategoria() == 0) {
+                data.setOk(false);
+                data.setMensaje("Se requiere ingresar una categoria");
+                return ResponseEntity.ok(data);
+            }
+            
+            Cotizacion objCotizacion = new Cotizacion();
+            
+            objCotizacion.setDireccion(cotizacion.getDireccion());
+            objCotizacion.setDescripcion(cotizacion.getDescripcion());
+            objCotizacion.setUbigeo(cotizacion.getUbigeo());
+            //obj.setPaquete(cotizacion.getp)
 
-            Cotizacion registrado = service.registrar(cotizacion);
+            Paquete objPaquete = new Paquete();
+            String listaProductos = "";
+            
+            for (int i = 0; i < cotizacion.getProductos().size(); i++) {
+				listaProductos += cotizacion.getProductos().get(i);
+				if(i != cotizacion.getProductos().size()) {
+					listaProductos += ";";
+				}
+			}
+            
+            objPaquete.setProductos(listaProductos);
+            objPaquete.setCantidad(cotizacion.getCantidad());
+            objPaquete.setPesototal(cotizacion.getPesoTotal());
+            objPaquete.setIdcategoria(cotizacion.getIdCategoria());
+            
+            Paquete paqueteRetorno = servicePaquete.registrar(objPaquete);
+            
+            objCotizacion.setPaquete(paqueteRetorno);
+            
+            double precio = cotizacion.getPesoTotal() * 4.0 + 20;
+            
+            objCotizacion.setCosto(precio);
+            objCotizacion.setFechaCreacion(new Date());
+            
+            Cotizacion registrado = service.registrar(objCotizacion);
 
             if (registrado == null) {
                 data.setOk(false);
@@ -160,75 +203,75 @@ public class CotizacionController {
 
     }
 	
-	@PutMapping("/actualizar/{id}")
-    @Secured("ROLE_ADMIN")
-    @Transactional
-    public ResponseEntity<ResponseApi<Cotizacion>> actualizarCotizacion(@PathVariable("id") int cotizacionId ,@RequestBody Cotizacion cotizacion) {
-        ResponseApi<Cotizacion> data = new ResponseApi<>();
-
-        try {
-            Optional<Cotizacion> encontrado = service.buscarPorId(cotizacionId);
-
-            if (encontrado.isEmpty()) {
-                data.setOk(false);
-                data.setMensaje("Cotizacion no existe o no está disponible");
-                return ResponseEntity.ok(data);
-            }
-            
-            if (cotizacion.getDescripcion() == null) {
-                data.setOk(false);
-                data.setMensaje("Se requiere ingresar una descripción");
-                return ResponseEntity.ok(data);
-            }
-
-            if (cotizacion.getCosto() == 0 ) {
-                data.setOk(false);
-                data.setMensaje("Se requiere un costo");
-                return ResponseEntity.ok(data);
-            }
-            
-            if (cotizacion.getDireccion() == null) {
-                data.setOk(false);
-                data.setMensaje("Se requiere ingresar una direccion");
-                return ResponseEntity.ok(data);
-            }
-            
-            if (cotizacion.getIdUbigeo() == 0) {
-                data.setOk(false);
-                data.setMensaje("Se requiere ingresar un ubigeo");
-                return ResponseEntity.ok(data);
-            }
-            
-            if (cotizacion.getIdUsuario() == 0) {
-                data.setOk(false);
-                data.setMensaje("Se requiere ingresar un usuario");
-                return ResponseEntity.ok(data);
-            }
-            
-            if (cotizacion.getIdPaquete() == 0) {
-                data.setOk(false);
-                data.setMensaje("Se requiere ingresar un paquete");
-                return ResponseEntity.ok(data);
-            }
-
-            cotizacion.setIdCotizacion(cotizacionId);
-            Cotizacion actualizado = service.actualizar(cotizacion);
-
-            if (actualizado == null) {
-                data.setOk(false);
-                data.setMensaje("Hubo un error al intentar actualizar la cotizacion");
-                return ResponseEntity.ok(data);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            data.setOk(false);
-            data.setMensaje("Sucedió un error inesperado consulte con su administrador");
-            data.setError(e.getMessage());
-        }
-
-        return ResponseEntity.ok(data);
-    }
+//	@PutMapping("/actualizar/{id}")
+//    @Secured("ROLE_ADMIN")
+//    @Transactional
+//    public ResponseEntity<ResponseApi<Cotizacion>> actualizarCotizacion(@PathVariable("id") int cotizacionId ,@RequestBody Cotizacion cotizacion) {
+//        ResponseApi<Cotizacion> data = new ResponseApi<>();
+//
+//        try {
+//            Optional<Cotizacion> encontrado = service.buscarPorId(cotizacionId);
+//
+//            if (encontrado.isEmpty()) {
+//                data.setOk(false);
+//                data.setMensaje("Cotizacion no existe o no está disponible");
+//                return ResponseEntity.ok(data);
+//            }
+//            
+//            if (cotizacion.getDescripcion() == null) {
+//                data.setOk(false);
+//                data.setMensaje("Se requiere ingresar una descripción");
+//                return ResponseEntity.ok(data);
+//            }
+//
+//            if (cotizacion.getCosto() == 0 ) {
+//                data.setOk(false);
+//                data.setMensaje("Se requiere un costo");
+//                return ResponseEntity.ok(data);
+//            }
+//            
+//            if (cotizacion.getDireccion() == null) {
+//                data.setOk(false);
+//                data.setMensaje("Se requiere ingresar una direccion");
+//                return ResponseEntity.ok(data);
+//            }
+//            
+//            if (cotizacion.getIdUbigeo() == 0) {
+//                data.setOk(false);
+//                data.setMensaje("Se requiere ingresar un ubigeo");
+//                return ResponseEntity.ok(data);
+//            }
+//            
+//            if (cotizacion.getIdUsuario() == 0) {
+//                data.setOk(false);
+//                data.setMensaje("Se requiere ingresar un usuario");
+//                return ResponseEntity.ok(data);
+//            }
+//            
+//            if (cotizacion.getIdPaquete() == 0) {
+//                data.setOk(false);
+//                data.setMensaje("Se requiere ingresar un paquete");
+//                return ResponseEntity.ok(data);
+//            }
+//
+//            cotizacion.setIdCotizacion(cotizacionId);
+//            Cotizacion actualizado = service.actualizar(cotizacion);
+//
+//            if (actualizado == null) {
+//                data.setOk(false);
+//                data.setMensaje("Hubo un error al intentar actualizar la cotizacion");
+//                return ResponseEntity.ok(data);
+//            }
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            data.setOk(false);
+//            data.setMensaje("Sucedió un error inesperado consulte con su administrador");
+//            data.setError(e.getMessage());
+//        }
+//
+//        return ResponseEntity.ok(data);
+//    }
 	
 	/*@PutMapping
     @ResponseBody

@@ -39,6 +39,11 @@ public class CotizacionServiceImpl implements CotizacionService{
 	public Cotizacion eliminar(Cotizacion cotizacion) {
 		return repository.save(cotizacion);
 	}
+
+	@Override
+	public Optional<Cotizacion> buscarPorIdUsuario(int idUsuario) {
+		return repository.findByIdUsuario(idUsuario);
+	}
 	
 	
 
