@@ -24,6 +24,7 @@ import com.postales.entity.Paquete;
 import com.postales.entity.dto.CotizacionDTO;
 import com.postales.service.CotizacionService;
 import com.postales.service.PaqueteService;
+import com.postales.service.UsuarioService;
 import com.postales.util.ResponseApi;
 
 @Controller
@@ -34,6 +35,9 @@ public class CotizacionController {
 	
 	@Autowired
 	private PaqueteService servicePaquete;
+	
+	@Autowired
+	private UsuarioService serviceUsuario;
 	
 	/*@GetMapping
 	@ResponseBody
@@ -183,6 +187,10 @@ public class CotizacionController {
             
             objCotizacion.setCosto(precio);
             objCotizacion.setFechaCreacion(new Date());
+            
+            int usuarioRetorno = serviceUsuario.obtenerIdUsuarioPeticion();
+            
+            objCotizacion.setIdUsuario(usuarioRetorno);
             
             Cotizacion registrado = service.registrar(objCotizacion);
 
