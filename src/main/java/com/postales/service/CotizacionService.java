@@ -10,6 +10,8 @@ public interface CotizacionService {
 	
 	public Optional<Cotizacion> buscarPorId(int id);
 	
+	public Optional<Cotizacion> buscarPorIdUsuario(int idUsuario);
+	
 	public List<Cotizacion> listar();
 	
 	public Cotizacion actualizar(Cotizacion cotizacion);
