@@ -14,6 +14,8 @@ public interface CotizacionService {
 	
 	public List<Cotizacion> listar();
 	
+	public List<Cotizacion> listarPorIdUsuario(int idUsuario);
+	
 	public Cotizacion actualizar(Cotizacion cotizacion);
 	
 	public Cotizacion eliminar(Cotizacion cotizacion);

@@ -47,12 +47,14 @@ public class CotizacionController {
 	}*/
 	
 	@GetMapping("/listar")
-	@Secured("ROLE_ADMIN")
+	@Secured({"ROLE_ADMIN" , "ROLE_CLIENTE", "ROLE_OPERADOR"})
     @Transactional(readOnly = true)
     public ResponseEntity<ResponseApi<Cotizacion>> listarCotizaciones() {
         ResponseApi<Cotizacion> data = new ResponseApi<>();
         try {
-            List<Cotizacion> cotizaciones = service.listar();
+        	int idUsu = serviceUsuario.obtenerIdUsuarioPeticion();
+        	
+            List<Cotizacion> cotizaciones = service.listarPorIdUsuario(idUsu);
 
             data.setOk(true);
 
@@ -66,6 +68,7 @@ public class CotizacionController {
                 }
             }
 
+            data.setDatos(cotizaciones);
         } catch (Exception e) {
             e.printStackTrace();
             data.setOk(false);
@@ -103,6 +106,7 @@ public class CotizacionController {
     }*/
 	
 	@PostMapping("/registrar")
+	@Secured({"ROLE_ADMIN" , "ROLE_CLIENTE", "ROLE_OPERADOR"})
     @Transactional
     public ResponseEntity<ResponseApi<Cotizacion>> registrarCotizacion(@RequestBody CotizacionDTO cotizacion) {
         ResponseApi<Cotizacion> data = new ResponseApi<>();

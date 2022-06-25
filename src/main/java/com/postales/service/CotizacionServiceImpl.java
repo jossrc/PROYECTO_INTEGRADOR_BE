@@ -44,6 +44,11 @@ public class CotizacionServiceImpl implements CotizacionService{
 	public Optional<Cotizacion> buscarPorIdUsuario(int idUsuario) {
 		return repository.findByIdUsuario(idUsuario);
 	}
+
+	@Override
+	public List<Cotizacion> listarPorIdUsuario(int idUsuario) {
+		return repository.listarCotizacionesPorId(idUsuario);
+	}
 	
 	
 
