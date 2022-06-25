@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -45,6 +46,73 @@ public class CotizacionController {
 		List<Cotizacion> lista = service.listar();
 		return ResponseEntity.ok(lista);
 	}*/
+	
+	@PutMapping("solicitar-envio/{id}")
+	@Secured({"ROLE_ADMIN" , "ROLE_CLIENTE", "ROLE_OPERADOR"})
+    @Transactional(readOnly = false)
+	public ResponseEntity<HashMap<String, Object>> solicitarEnvio(@PathVariable int id) {
+        HashMap<String, Object> salida = new HashMap<String, Object>();
+        salida.put("objeto", null);
+        salida.put("datos", new ArrayList<>());
+        try {
+            Optional<Cotizacion> optional = service.buscarPorId(id);
+            if (optional.isPresent()) {
+            	Cotizacion cotizacion = optional.get();
+            	cotizacion.setEstado(1);
+                Cotizacion eliminado = service.actualizar(cotizacion);
+                if (eliminado != null) {
+                    salida.put("ok", true);
+                    salida.put("mensaje", "Se pudo solicitar el envio");
+                } else {
+                    salida.put("ok", false);
+                    salida.put("mensaje", "No se pudo solicitar el envio");
+                }
+
+            } else {
+                salida.put("ok", false);
+                salida.put("mensaje", "La cotizacion con ID " + id + " no existe");
+            }
+
+        } catch (Exception e) {
+            salida.put("ok", false);
+            salida.put("mensaje", "Sucedió un error inesperado consulte con su administrador");
+        }
+
+        return ResponseEntity.ok(salida);
+    }
+	
+	
+	@GetMapping("/listar/todo")
+	@Secured({"ROLE_ADMIN" , "ROLE_CLIENTE", "ROLE_OPERADOR"})
+    @Transactional(readOnly = true)
+    public ResponseEntity<ResponseApi<Cotizacion>> listarCotizacionesTodo() {
+        ResponseApi<Cotizacion> data = new ResponseApi<>();
+        try {
+        	
+            List<Cotizacion> cotizaciones = service.listar();
+
+            data.setOk(true);
+
+            if (cotizaciones.size() <= 0) {
+                data.setMensaje("No se encontraron resultados");
+            } else {
+                if (cotizaciones.size() == 1) {
+                    data.setMensaje("Se encontró un registro");
+                } else {
+                    data.setMensaje("Se encontraron " + cotizaciones.size() + " registros");
+                }
+            }
+
+            data.setDatos(cotizaciones);
+        } catch (Exception e) {
+            e.printStackTrace();
+            data.setOk(false);
+            data.setMensaje("Sucedió un error inesperado consulte con su administrador");
+            data.setError(e.getMessage());
+        }
+
+        return ResponseEntity.ok(data);
+	}
 	
 	@GetMapping("/listar")
 	@Secured({"ROLE_ADMIN" , "ROLE_CLIENTE", "ROLE_OPERADOR"})
@@ -310,11 +378,11 @@ public class CotizacionController {
         return ResponseEntity.ok(salida);
     }*/
 	
-	@DeleteMapping("/eliminar/{id}")
+	@DeleteMapping("rechazar-envio/{id}")
     @ResponseBody
-    @Secured("ROLE_ADMIN")
+    @Secured({"ROLE_ADMIN", "ROLE_OPERADOR"})
     @Transactional
-    public ResponseEntity<HashMap<String, Object>> eliminarCotizacion(@PathVariable int id) {
+    public ResponseEntity<HashMap<String, Object>> rechazarCotizacion(@PathVariable int id) {
         HashMap<String, Object> salida = new HashMap<String, Object>();
         salida.put("objeto", null);
         salida.put("datos", new ArrayList<>());
@@ -322,11 +390,11 @@ public class CotizacionController {
             Optional<Cotizacion> optional = service.buscarPorId(id);
             if (optional.isPresent()) {
             	Cotizacion cotizacion = optional.get();
-            	cotizacion.setEstado(0);
+            	cotizacion.setEstado(3);
                 Cotizacion eliminado = service.actualizar(cotizacion);
                 if (eliminado != null) {
                     salida.put("ok", true);
-                    salida.put("mensaje", "No se pudo eliminar la cotizacion");
+                    salida.put("mensaje", "Se pudo eliminar la cotizacion");
                 } else {
                     salida.put("ok", false);
                     salida.put("mensaje", "No se pudo eliminar la cotizacion");
