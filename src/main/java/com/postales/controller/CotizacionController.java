@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -29,6 +31,7 @@ import com.postales.service.UsuarioService;
 import com.postales.util.ResponseApi;
 
 @Controller
+@SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/api/cotizaciones")
 public class CotizacionController {
 	@Autowired
@@ -49,6 +52,8 @@ public class CotizacionController {
 	
 	@PutMapping("solicitar-envio/{id}")
 	@Secured({"ROLE_ADMIN" , "ROLE_CLIENTE", "ROLE_OPERADOR"})
+    @Operation(summary = "Solicitar envío por cotización")
+    @ResponseBody
     @Transactional(readOnly = false)
 	public ResponseEntity<HashMap<String, Object>> solicitarEnvio(@PathVariable int id) {
         HashMap<String, Object> salida = new HashMap<String, Object>();
@@ -84,6 +89,8 @@ public class CotizacionController {
 	
 	@GetMapping("/listar/todo")
 	@Secured({"ROLE_ADMIN" , "ROLE_CLIENTE", "ROLE_OPERADOR"})
+    @ResponseBody
+    @Operation(summary = "Listar todas las cotizaciones")
     @Transactional(readOnly = true)
     public ResponseEntity<ResponseApi<Cotizacion>> listarCotizacionesTodo() {
         ResponseApi<Cotizacion> data = new ResponseApi<>();
@@ -116,6 +123,8 @@ public class CotizacionController {
 	
 	@GetMapping("/listar")
 	@Secured({"ROLE_ADMIN" , "ROLE_CLIENTE", "ROLE_OPERADOR"})
+    @ResponseBody
+    @Operation(summary = "Listar cotizaciones del usuario registrado")
     @Transactional(readOnly = true)
     public ResponseEntity<ResponseApi<Cotizacion>> listarCotizaciones() {
         ResponseApi<Cotizacion> data = new ResponseApi<>();
@@ -175,6 +184,8 @@ public class CotizacionController {
 	
 	@PostMapping("/registrar")
 	@Secured({"ROLE_ADMIN" , "ROLE_CLIENTE", "ROLE_OPERADOR"})
+    @Operation(summary = "Registrar cotización")
+    @ResponseBody
     @Transactional
     public ResponseEntity<ResponseApi<Cotizacion>> registrarCotizacion(@RequestBody CotizacionDTO cotizacion) {
         ResponseApi<Cotizacion> data = new ResponseApi<>();
@@ -380,6 +391,7 @@ public class CotizacionController {
 	
 	@DeleteMapping("rechazar-envio/{id}")
     @ResponseBody
+    @Operation(summary = "Rechazar una cotización")
     @Secured({"ROLE_ADMIN", "ROLE_OPERADOR"})
     @Transactional
     public ResponseEntity<HashMap<String, Object>> rechazarCotizacion(@PathVariable int id) {

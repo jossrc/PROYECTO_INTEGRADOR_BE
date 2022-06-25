@@ -2,6 +2,7 @@ package com.postales.controller;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +20,14 @@ public class ClienteController {
 	
 	@Autowired
 	private ClienteService clienteService;
-	
+
+	@Operation(deprecated = true, hidden = false)
 	@GetMapping("/cliente")
 	public List<Cliente> listarCliente(){
 		return clienteService.listarCiente();
 	}
-	
+
+	@Operation(deprecated = true, hidden = false)
 	@GetMapping("/cliente/{id}")
 	public ResponseEntity<Cliente> obtenerProducto(@PathVariable Integer id) {
 		try {
@@ -34,6 +37,8 @@ public class ClienteController {
 			return new ResponseEntity<Cliente>(HttpStatus.NOT_FOUND);
 		}
 	}
+
+	@Operation(deprecated = true, hidden = false)
 	@PostMapping("/cliente")
 	public void guardarProducto(@RequestBody Cliente cliente) {
 		clienteService.crearCliente(cliente);

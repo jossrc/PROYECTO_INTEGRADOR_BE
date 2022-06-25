@@ -8,6 +8,8 @@ import java.util.Optional;
 import com.postales.util.AppSettings;
 import com.postales.util.ResponseApi;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -19,6 +21,7 @@ import com.postales.service.VehiculoService;
 
 @RestController
 @RequestMapping("/api/vehiculo")
+@SecurityRequirement(name = "bearerAuth")
 @CrossOrigin(origins = AppSettings.URL_CROSS_ORIGIN)
 public class VehiculoController {
 
@@ -34,6 +37,8 @@ public class VehiculoController {
 	
 	@GetMapping("/listar")
     @Secured("ROLE_ADMIN")
+    @Operation(summary = "Listar vehículos")
+    @ResponseBody
 	@Transactional(readOnly = true)
     public ResponseEntity<ResponseApi<Vehiculo>> listarTodo() {
 		ResponseApi<Vehiculo> data = new ResponseApi<>();
@@ -90,6 +95,8 @@ public class VehiculoController {
 	
 	@PostMapping("/registrar")
     @Secured("ROLE_ADMIN")
+    @Operation(summary = "Registrar vehículo")
+    @ResponseBody
 	@Transactional
     public ResponseEntity<ResponseApi<Vehiculo>> registrar(@RequestBody Vehiculo vehiculo) {
 		ResponseApi<Vehiculo> data = new ResponseApi<>();
@@ -165,6 +172,7 @@ public class VehiculoController {
 	}*/
 	
 	@PutMapping("/actualizar/{id}")
+    @Operation(summary = "Actualizar vehículo")
     @ResponseBody
     @Secured("ROLE_ADMIN")
     public ResponseEntity<ResponseApi<Vehiculo>> actualizar(@PathVariable("id") int idVehiculo ,@RequestBody Vehiculo vehiculo) {
@@ -249,6 +257,7 @@ public class VehiculoController {
 	
 	@DeleteMapping("/eliminar/{id}")
 	@ResponseBody
+    @Operation(summary = "Eliminar vehículo")
 	@Secured("ROLE_ADMIN")
 	@Transactional
     public ResponseEntity<HashMap<String, Object>> eliminar(@PathVariable int id) {

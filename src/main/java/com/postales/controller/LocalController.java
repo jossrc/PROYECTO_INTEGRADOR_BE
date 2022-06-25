@@ -8,6 +8,8 @@ import java.util.Optional;
 import com.postales.util.AppSettings;
 import com.postales.util.ResponseApi;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -19,6 +21,7 @@ import com.postales.service.LocalService;
 
 @RestController
 @RequestMapping("/api/local")
+@SecurityRequirement(name = "bearerAuth")
 @CrossOrigin(origins = AppSettings.URL_CROSS_ORIGIN)
 public class LocalController {
 
@@ -27,6 +30,8 @@ public class LocalController {
 
 	@GetMapping("/listar")
 	@Secured("ROLE_ADMIN")
+	@Operation(summary = "Listar locales")
+	@ResponseBody
 	@Transactional(readOnly = true)
 	public ResponseEntity<ResponseApi<Local>> listarTodo() {
 		ResponseApi<Local> data = new ResponseApi<>();
@@ -59,6 +64,8 @@ public class LocalController {
 
 	@PostMapping("/registrar")
 	@Secured("ROLE_ADMIN")
+	@Operation(summary = "Registrar local")
+	@ResponseBody
 	@Transactional
 	public ResponseEntity<ResponseApi<Local>> registrar(@RequestBody Local local) {
 		ResponseApi<Local> data = new ResponseApi<>();
@@ -126,6 +133,8 @@ public class LocalController {
 
 	@PutMapping("/actualizar/{id}")
 	@Secured("ROLE_ADMIN")
+	@Operation(summary = "Actualizar local")
+	@ResponseBody
 	@Transactional
 	public ResponseEntity<ResponseApi<Local>> actualizar(@PathVariable("id") int idLocal, @RequestBody Local local) {
 		ResponseApi<Local> data = new ResponseApi<>();
@@ -194,6 +203,7 @@ public class LocalController {
 
 	@DeleteMapping("/eliminar/{id}")
 	@ResponseBody
+	@Operation(summary = "Eliminar local")
 	@Secured("ROLE_ADMIN")
 	@Transactional
 	public ResponseEntity<HashMap<String, Object>> eliminar(@PathVariable int id) {
