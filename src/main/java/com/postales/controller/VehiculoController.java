@@ -61,7 +61,7 @@ public class VehiculoController {
         }
 
         return ResponseEntity.ok(data);
-    }
+	}
 
 	/*@PostMapping
     @ResponseBody

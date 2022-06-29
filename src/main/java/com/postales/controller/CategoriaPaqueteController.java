@@ -26,7 +26,7 @@ public class CategoriaPaqueteController {
 	private CategoriaPaqueteService service;
 	
 	@GetMapping("/listar")
-    @Secured("ROLE_ADMIN")
+	@Secured({"ROLE_ADMIN" , "ROLE_CLIENTE", "ROLE_OPERADOR"})
 	@Transactional(readOnly = true)
     public ResponseEntity<ResponseApi<CategoriaPaquete>> listarTodo() {
 		ResponseApi<CategoriaPaquete> data = new ResponseApi<>();
@@ -54,7 +54,7 @@ public class CategoriaPaqueteController {
         }
 
         return ResponseEntity.ok(data);
-    }
+	}
 	
 	@PostMapping("/registrar")
     @Secured("ROLE_ADMIN")

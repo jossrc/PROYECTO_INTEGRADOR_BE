@@ -13,6 +13,4 @@ public class Util {
     public static int generarEnteroAleatorio(int minimo, int maximo) {
         return ThreadLocalRandom.current().nextInt(minimo, maximo + 1);
     }
-
-
 }

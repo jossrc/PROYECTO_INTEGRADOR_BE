@@ -3,6 +3,8 @@ package com.postales.service;
 import com.postales.entity.Usuario;
 import com.postales.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -57,5 +59,20 @@ public class UsuarioServiceImpl implements UsuarioService  {
     @Override
     public Optional<Usuario> obtenerEmpleado(int id) {
         return repository.obtenerEmpleado(id);
+    }
+
+    @Override
+    public int obtenerIdUsuarioPeticion() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        int id = -1;
+        Optional<Usuario> usuario = repository.findByEmail(email);
+
+        if (usuario.isPresent()) {
+            id = usuario.get().getIdUsuario();
+        }
+
+        return id;
     }
 }

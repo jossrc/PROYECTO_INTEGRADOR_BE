@@ -20,6 +20,18 @@ public class EnvioServiceImpl implements EnvioService {
 		return repo.findAll();
 	}
 
+	@Override
+	public List<Envio> listaEnvioUsu(int idUsu) {
+		// TODO Auto-generated method stub
+		return repo.listaEnvioUsu(idUsu);
+	}
+
+	/*@Override
+	public List<Envio> listaPorIdLike(int idUsu) {
+		// TODO Auto-generated method stub
+		return repo.findByIdLike(idUsu);
+	}*/
+
 
 
 }
