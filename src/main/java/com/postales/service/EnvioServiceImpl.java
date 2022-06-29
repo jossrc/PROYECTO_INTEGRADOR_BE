@@ -26,6 +26,11 @@ public class EnvioServiceImpl implements EnvioService {
 		return repo.listaEnvioUsu(idUsu);
 	}
 
+	@Override
+	public Envio registrar(Envio envio) {
+		return repo.save(envio);
+	}
+
 	/*@Override
 	public List<Envio> listaPorIdLike(int idUsu) {
 		// TODO Auto-generated method stub

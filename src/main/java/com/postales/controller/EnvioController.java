@@ -1,10 +1,13 @@
 package com.postales.controller;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.postales.util.AppSettings;
+import com.postales.util.ResponseApi;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,15 +15,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.postales.entity.Cotizacion;
 import com.postales.entity.Envio;
+import com.postales.entity.Paquete;
+import com.postales.entity.dto.CotizacionDTO;
 import com.postales.service.EnvioService;
 import com.postales.service.UsuarioService;
 
@@ -94,6 +103,71 @@ public class EnvioController {
 		
 	}
 	
-	
+	@PostMapping("/registrar")
+	@Secured({"ROLE_ADMIN" , "ROLE_CLIENTE", "ROLE_OPERADOR"})
+    @Transactional
+    public ResponseEntity<ResponseApi<Envio>> registrarEnvio(@RequestBody Envio envio) {
+        ResponseApi<Envio> data = new ResponseApi<>();
+        try {
+        	
+        	envio.setAdjunto(null);
+        	envio.setEstado(1);
+        	
+            if (envio.getFechaInicio() == null) {
+                data.setOk(false);
+                data.setMensaje("Se requiere ingresar una fecha de inicio");
+                return ResponseEntity.ok(data);
+            }
+            
+            if (envio.getFechaEntrega() == null) {
+                data.setOk(false);
+                data.setMensaje("Se requiere ingresar una fecha de entrega");
+                return ResponseEntity.ok(data);
+            }
+            
+            if (envio.getFechaCreacion() == null) {
+                data.setOk(false);
+                data.setMensaje("Se requiere ingresar una fecha de creacion");
+                return ResponseEntity.ok(data);
+            }
+            
+            if (envio.getCotizacion() == null) {
+                data.setOk(false);
+                data.setMensaje("Se requiere una cotizacion");
+                return ResponseEntity.ok(data);
+            }
+            
+            if (envio.getUsuario() == null) {
+                data.setOk(false);
+                data.setMensaje("Se requiere un usuario");
+                return ResponseEntity.ok(data);
+            }
+            
+            if (envio.getVehiculo() == null) {
+                data.setOk(false);
+                data.setMensaje("Se requiere un vehiculo");
+                return ResponseEntity.ok(data);
+            }
+            
+            Envio registrado = serv.registrar(envio);
+
+            if (registrado == null) {
+                data.setOk(false);
+                data.setMensaje("Hubo un error al intentar generar el envio");
+                return ResponseEntity.ok(data);
+            }
+
+            data.setOk(true);
+            data.setMensaje("Se genero el envio satisfactoriamente");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            data.setOk(false);
+            data.setMensaje("Sucedió un error inesperado consulte con su administrador");
+            data.setError(e.getMessage());
+        }
+        return ResponseEntity.ok(data);
+
+    }
 	
 }
