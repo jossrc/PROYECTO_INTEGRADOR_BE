@@ -29,7 +29,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.postales.entity.Cotizacion;
 import com.postales.entity.Envio;
 import com.postales.entity.Paquete;
+import com.postales.entity.Usuario;
+import com.postales.entity.Vehiculo;
 import com.postales.entity.dto.CotizacionDTO;
+import com.postales.entity.dto.EnvioDTO;
+import com.postales.service.CotizacionService;
 import com.postales.service.EnvioService;
 import com.postales.service.UsuarioService;
 
@@ -46,6 +50,9 @@ public class EnvioController {
 	
 	@Autowired
 	private UsuarioService usuServ;
+	
+	@Autowired
+	private CotizacionService cotizacionServ;
 	
 	
 	@GetMapping("/listaEnvios")
@@ -106,48 +113,70 @@ public class EnvioController {
 	@PostMapping("/registrar")
 	@Secured({"ROLE_ADMIN" , "ROLE_CLIENTE", "ROLE_OPERADOR"})
     @Transactional
-    public ResponseEntity<ResponseApi<Envio>> registrarEnvio(@RequestBody Envio envio) {
+    public ResponseEntity<ResponseApi<Envio>> registrarEnvio(@RequestBody EnvioDTO envioDTO) {
         ResponseApi<Envio> data = new ResponseApi<>();
         try {
+        	
+        	Envio envio = new Envio();
+        	
+        	System.out.println(envioDTO.toString());
         	
         	envio.setAdjunto(null);
         	envio.setEstado(1);
         	
-            if (envio.getFechaInicio() == null) {
+            if (envioDTO.getFechaInicio() == null) {
                 data.setOk(false);
                 data.setMensaje("Se requiere ingresar una fecha de inicio");
                 return ResponseEntity.ok(data);
             }
             
-            if (envio.getFechaEntrega() == null) {
+            if (envioDTO.getFechaEntrega() == null) {
                 data.setOk(false);
                 data.setMensaje("Se requiere ingresar una fecha de entrega");
                 return ResponseEntity.ok(data);
             }
             
-            if (envio.getFechaCreacion() == null) {
+            if (envioDTO.getFechaCreacion() == null) {
                 data.setOk(false);
                 data.setMensaje("Se requiere ingresar una fecha de creacion");
                 return ResponseEntity.ok(data);
             }
             
-            if (envio.getCotizacion() == null) {
+            if (envioDTO.getIdCotizacion() == 0) {
                 data.setOk(false);
                 data.setMensaje("Se requiere una cotizacion");
                 return ResponseEntity.ok(data);
             }
             
-            if (envio.getUsuario() == null) {
+            if (envioDTO.getIdUsuario() == 0) {
                 data.setOk(false);
                 data.setMensaje("Se requiere un usuario");
                 return ResponseEntity.ok(data);
             }
             
-            if (envio.getVehiculo() == null) {
+            if (envioDTO.getIdVehiculo() == 0) {
                 data.setOk(false);
                 data.setMensaje("Se requiere un vehiculo");
                 return ResponseEntity.ok(data);
             }
+            
+            Cotizacion objCotizacion = new Cotizacion();
+            objCotizacion.setIdCotizacion(envioDTO.getIdCotizacion());
+            
+            Usuario objUsuario = new Usuario();
+            objUsuario.setIdUsuario(envioDTO.getIdUsuario());
+            
+            Vehiculo objVehiculo = new Vehiculo();
+            objVehiculo.setIdVehiculo(envioDTO.getIdVehiculo());
+            
+            envio.setCotizacion(objCotizacion);
+            envio.setUsuario(objUsuario);
+            envio.setVehiculo(objVehiculo);
+            envio.setFechaCreacion(envioDTO.getFechaCreacion());
+            envio.setFechaInicio(envioDTO.getFechaInicio());
+            envio.setFechaEntrega(envioDTO.getFechaEntrega());
+            
+            System.out.println(envio.toString());
             
             Envio registrado = serv.registrar(envio);
 
@@ -156,9 +185,18 @@ public class EnvioController {
                 data.setMensaje("Hubo un error al intentar generar el envio");
                 return ResponseEntity.ok(data);
             }
+            
+            Optional<Cotizacion> cotizacion = cotizacionServ.buscarPorId(envioDTO.getIdCotizacion());
+            
+            if(cotizacion.isPresent()) {
+            	Cotizacion objCoti = cotizacion.get();
+            	objCoti.setEstado(2);
+            	cotizacionServ.actualizar(objCoti);
+            }
 
             data.setOk(true);
             data.setMensaje("Se genero el envio satisfactoriamente");
+            
 
         } catch (Exception e) {
             e.printStackTrace();
