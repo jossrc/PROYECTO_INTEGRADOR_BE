@@ -31,6 +31,13 @@ public class Envio implements Serializable {
 	private int idEnvio;
 	private String adjunto;
 	
+	@Override
+	public String toString() {
+		return "Envio [idEnvio=" + idEnvio + ", adjunto=" + adjunto + ", fechaInicio=" + fechaInicio + ", fechaEntrega="
+				+ fechaEntrega + ", fechaCreacion=" + fechaCreacion + ", cotizacion=" + cotizacion + ", usuario="
+				+ usuario + ", vehiculo=" + vehiculo + ", estado=" + estado + "]";
+	}
+
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@Temporal(TemporalType.DATE)
 	private Date fechaInicio;
