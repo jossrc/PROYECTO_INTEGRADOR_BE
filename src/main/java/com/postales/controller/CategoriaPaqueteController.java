@@ -8,6 +8,8 @@ import java.util.Optional;
 import com.postales.util.AppSettings;
 import com.postales.util.ResponseApi;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -19,6 +21,7 @@ import com.postales.service.CategoriaPaqueteService;
 
 @RestController
 @RequestMapping("/api/categoriaPaquete")
+@SecurityRequirement(name = "bearerAuth")
 @CrossOrigin(origins = AppSettings.URL_CROSS_ORIGIN)
 public class CategoriaPaqueteController {
 
@@ -27,6 +30,8 @@ public class CategoriaPaqueteController {
 	
 	@GetMapping("/listar")
 	@Secured({"ROLE_ADMIN" , "ROLE_CLIENTE", "ROLE_OPERADOR"})
+    @ResponseBody
+    @Operation(summary = "Listar categoría de paquetes")
 	@Transactional(readOnly = true)
     public ResponseEntity<ResponseApi<CategoriaPaquete>> listarTodo() {
 		ResponseApi<CategoriaPaquete> data = new ResponseApi<>();
@@ -58,6 +63,8 @@ public class CategoriaPaqueteController {
 	
 	@PostMapping("/registrar")
     @Secured("ROLE_ADMIN")
+    @Operation(summary = "Registro de categoría de paquete")
+    @ResponseBody
 	@Transactional
     public ResponseEntity<ResponseApi<CategoriaPaquete>> registrar(@RequestBody CategoriaPaquete cpaquete) {
 		ResponseApi<CategoriaPaquete> data = new ResponseApi<>();
@@ -103,6 +110,7 @@ public class CategoriaPaqueteController {
 
 	@PutMapping("/actualizar/{id}")
     @ResponseBody
+    @Operation(summary = "Actualizar categoría paquete")
     @Secured("ROLE_ADMIN")
     public ResponseEntity<ResponseApi<CategoriaPaquete>> actualizar(@PathVariable("id") int idCategoriaPaquete ,@RequestBody CategoriaPaquete cpaquete) {
 		ResponseApi<CategoriaPaquete> data = new ResponseApi<>();
@@ -155,6 +163,7 @@ public class CategoriaPaqueteController {
 
 	@DeleteMapping("/eliminar/{id}")
 	@ResponseBody
+    @Operation(summary = "Eliminar categoría paquete")
 	@Secured("ROLE_ADMIN")
 	@Transactional
     public ResponseEntity<HashMap<String, Object>> eliminar(@PathVariable int id) {

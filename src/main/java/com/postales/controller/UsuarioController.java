@@ -6,6 +6,8 @@ import com.postales.entity.Usuario;
 import com.postales.service.UsuarioService;
 import com.postales.util.AppSettings;
 import com.postales.util.ResponseApi;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -30,6 +32,8 @@ public class UsuarioController {
     private UsuarioService service;
 
     @PostMapping("/cliente/registrar")
+    @ResponseBody
+    @Operation(summary = "Registro de usuario")
     @Transactional
     public ResponseEntity<ResponseApi<Usuario>> registrarCliente(@RequestBody Usuario usuario) {
         ResponseApi<Usuario> data = new ResponseApi<>();
@@ -90,6 +94,8 @@ public class UsuarioController {
 
     @PostMapping("/empleado/registrar")
     @Secured("ROLE_ADMIN")
+    @ResponseBody
+    @Operation(summary = "Registrar empleado", security = @SecurityRequirement(name = "bearerAuth"))
     @Transactional
     public ResponseEntity<ResponseApi<Usuario>> registrarEmpleado(@RequestBody Usuario usuario) {
         ResponseApi<Usuario> data = new ResponseApi<>();
@@ -162,6 +168,8 @@ public class UsuarioController {
 
     @PutMapping("/empleado/actualizar/{id}")
     @Secured("ROLE_ADMIN")
+    @ResponseBody
+    @Operation(summary = "Actualizar empleado", security = @SecurityRequirement(name = "bearerAuth"))
     @Transactional
     public ResponseEntity<ResponseApi<Usuario>> actualizarEmpleado(@PathVariable("id") int empleadoId ,@RequestBody Usuario usuario) {
         ResponseApi<Usuario> data = new ResponseApi<>();
@@ -250,6 +258,7 @@ public class UsuarioController {
     @DeleteMapping("/empleado/eliminar/{id}")
     @ResponseBody
     @Secured("ROLE_ADMIN")
+    @Operation(summary = "Eliminar empleado", security = @SecurityRequirement(name = "bearerAuth"))
     @Transactional
     public ResponseEntity<HashMap<String, Object>> eliminarEmpleado(@PathVariable int id) {
         HashMap<String, Object> salida = new HashMap<String, Object>();
@@ -285,6 +294,8 @@ public class UsuarioController {
 
     @GetMapping
     @Secured("ROLE_ADMIN")
+    @ResponseBody
+    @Operation(summary = "Listar usuarios", security = @SecurityRequirement(name = "bearerAuth"))
     @Transactional(readOnly = true)
     public ResponseEntity<ResponseApi<Usuario>> listarUsuarios() {
         ResponseApi<Usuario> data = new ResponseApi<>();
@@ -319,6 +330,8 @@ public class UsuarioController {
 
     @GetMapping("/empleado/listar")
     @Secured("ROLE_ADMIN")
+    @ResponseBody
+    @Operation(summary = "Listar empleados", security = @SecurityRequirement(name = "bearerAuth"))
     @Transactional(readOnly = true)
     public ResponseEntity<ResponseApi<Usuario>> listarEmpleados() {
         ResponseApi<Usuario> data = new ResponseApi<>();
@@ -355,6 +368,8 @@ public class UsuarioController {
 
     @GetMapping("/cliente/listar")
     @Secured("ROLE_ADMIN")
+    @ResponseBody
+    @Operation(summary = "Listar clientes", security = @SecurityRequirement(name = "bearerAuth"))
     @Transactional(readOnly = true)
     public ResponseEntity<ResponseApi<Usuario>> listarClientes() {
         ResponseApi<Usuario> data = new ResponseApi<>();
@@ -385,6 +400,5 @@ public class UsuarioController {
 
         return ResponseEntity.ok(data);
     }
-
 
 }

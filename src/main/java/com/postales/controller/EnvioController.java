@@ -6,6 +6,8 @@ import java.util.Map;
 
 import com.postales.util.AppSettings;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,7 @@ import com.postales.service.UsuarioService;
 
 @Controller
 @RequestMapping("/api/envios")
+@SecurityRequirement(name = "bearerAuth")
 @CrossOrigin(origins = AppSettings.URL_CROSS_ORIGIN)
 public class EnvioController {
 	
@@ -41,6 +44,7 @@ public class EnvioController {
 	
 	@GetMapping("/listaEnvios")
 	@Secured("ROLE_ADMIN")
+	@Operation(summary = "Listar todos los envíos")
 	@ResponseBody
 	public ResponseEntity<List<Envio>> listEnvios() {
 		
@@ -72,6 +76,7 @@ public class EnvioController {
 	
 	
 	@GetMapping("/listaEnviosUsu/{id}")
+	@Operation(summary = "Listar envíos del usuario registrado")
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> listEnviosUsu(@RequestParam(value="idUsu", required=false, defaultValue="0") int idUsu) {
 		

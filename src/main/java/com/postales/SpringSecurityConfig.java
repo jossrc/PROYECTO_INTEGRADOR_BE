@@ -46,7 +46,19 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
                 .authorizeRequests().antMatchers(
-                "/", "/api/usuarios/cliente/registrar", "/api/ubigeo/**").permitAll()
+                "/",
+                        "/api/usuarios/cliente/registrar",
+                        "/api/ubigeo/**",
+                        "/api-docs/**",
+                        "/v2/api-docs",
+                        "/v3/api-docs",
+                        "/swagger-resources/**",
+                        "/swagger-ui.html",
+                        "/swagger-ui/**",
+                        "/swagger-ui/index.html",
+                        "/webjars/**" ,
+                        "/swagger.json"
+                ).permitAll()
                 .anyRequest().authenticated()
                 .and() //.addFilterBefore(corsFilter, ChannelProcessingFilter.class)
                 .addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtService))
