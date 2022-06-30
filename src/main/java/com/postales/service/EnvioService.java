@@ -5,6 +5,8 @@ import java.util.List;
 import com.postales.entity.Envio;
 
 public interface EnvioService {
+	
+	public Envio registrar(Envio envio);
 
 	public abstract List<Envio> listarEnvio();
 	
