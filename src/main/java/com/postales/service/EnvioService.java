@@ -10,6 +10,11 @@ public interface EnvioService {
 
 	public abstract List<Envio> listarEnvio();
 	
+	public List<Envio> listarEnvios();
+	public List<Envio> listarEnviosPorDia();
+	public List<Envio> listarEnviosPorUsuarioDia(int idUsu);
+	public List<Envio> listarEnviosEnviando(int idUsu);
+	
 	public abstract List<Envio> listaEnvioUsu(int idUsu);
 	
 	/*public abstract List<Envio> listaPorIdLike(int idUsu);*/
