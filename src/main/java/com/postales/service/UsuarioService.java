@@ -23,6 +23,9 @@ public interface UsuarioService {
     public List<Usuario> listarClientes();
 
     public Optional<Usuario> obtenerEmpleado(int id);
+    
+    public List<Usuario> obtenerEmpleadoPerfilRol(int id);
+    public List<Usuario> obtenerCantidadUsuarios();
 
     public int obtenerIdUsuarioPeticion();
 

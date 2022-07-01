@@ -15,6 +15,12 @@ public interface CotizacionService {
 	public List<Cotizacion> listar();
 	
 	public List<Cotizacion> listarPorIdUsuario(int idUsuario);
+	public List<Cotizacion> listarCotizaciones();
+	public List<Cotizacion> listarCotizacionesPorDia();
+	public List<Cotizacion> listarCotizacionesAprobado(int idUsuario);
+	public List<Cotizacion> listarCotizacionesPendiente(int idUsuario);
+	public List<Cotizacion> listarCotizacionesRechazado(int idUsuario);
+	public List<Cotizacion> listarPorIdDia(int idUsuario);
 	
 	public Cotizacion actualizar(Cotizacion cotizacion);
 	

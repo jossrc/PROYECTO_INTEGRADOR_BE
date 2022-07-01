@@ -121,6 +121,41 @@ public class CotizacionController {
         return ResponseEntity.ok(data);
 	}
 	
+	@GetMapping("/listarPorDia")
+	@Secured({"ROLE_ADMIN" , "ROLE_OPERADOR"})
+    @ResponseBody
+    @Operation(summary = "Listar todas las cotizaciones")
+    @Transactional(readOnly = true)
+    public ResponseEntity<ResponseApi<Cotizacion>> listarCotizacionesPorDia() {
+        ResponseApi<Cotizacion> data = new ResponseApi<>();
+        try {
+        	
+            List<Cotizacion> cotizaciones = service.listarCotizacionesPorDia();
+
+            data.setOk(true);
+
+            if (cotizaciones.size() <= 0) {
+                data.setMensaje("No se encontraron resultados");
+            } else {
+                if (cotizaciones.size() == 1) {
+                    data.setMensaje("Se encontró un registro");
+                } else {
+                    data.setMensaje("Se encontraron " + cotizaciones.size() + " registros");
+                }
+            }
+
+            data.setDatos(cotizaciones);
+        } catch (Exception e) {
+            e.printStackTrace();
+            data.setOk(false);
+            data.setMensaje("Sucedió un error inesperado consulte con su administrador");
+            data.setError(e.getMessage());
+        }
+
+        return ResponseEntity.ok(data);
+	}
+	
+	
 	@GetMapping("/listar")
 	@Secured({"ROLE_ADMIN" , "ROLE_CLIENTE", "ROLE_OPERADOR"})
     @ResponseBody
@@ -132,6 +167,41 @@ public class CotizacionController {
         	int idUsu = serviceUsuario.obtenerIdUsuarioPeticion();
         	
             List<Cotizacion> cotizaciones = service.listarPorIdUsuario(idUsu);
+
+            data.setOk(true);
+
+            if (cotizaciones.size() <= 0) {
+                data.setMensaje("No se encontraron resultados");
+            } else {
+                if (cotizaciones.size() == 1) {
+                    data.setMensaje("Se encontró un registro");
+                } else {
+                    data.setMensaje("Se encontraron " + cotizaciones.size() + " registros");
+                }
+            }
+
+            data.setDatos(cotizaciones);
+        } catch (Exception e) {
+            e.printStackTrace();
+            data.setOk(false);
+            data.setMensaje("Sucedió un error inesperado consulte con su administrador");
+            data.setError(e.getMessage());
+        }
+
+        return ResponseEntity.ok(data);
+	}
+	
+	@GetMapping("/listarPorIdDia")
+	@Secured({"ROLE_ADMIN" , "ROLE_CLIENTE", "ROLE_OPERADOR"})
+    @ResponseBody
+    @Operation(summary = "Listar cotizaciones del usuario registrado")
+    @Transactional(readOnly = true)
+    public ResponseEntity<ResponseApi<Cotizacion>> listarCotizacionesPorIdDia() {
+        ResponseApi<Cotizacion> data = new ResponseApi<>();
+        try {
+        	int idUsu = serviceUsuario.obtenerIdUsuarioPeticion();
+        	
+            List<Cotizacion> cotizaciones = service.listarPorIdDia(idUsu);
 
             data.setOk(true);
 

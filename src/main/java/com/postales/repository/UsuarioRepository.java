@@ -21,5 +21,11 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     @Query("select u from Usuario u where u.idUsuario = ?1 and u.rol.id in (1,2) and u.disponible = true")
     public Optional<Usuario> obtenerEmpleado(int id);
+    
+    @Query("select u from Usuario u where u.idUsuario = ?1 and u.disponible = true")
+    public List<Usuario> obtenerEmpleadoPerfilRol(int id);
+    
+    @Query("select u from Usuario u where u.disponible = true")
+    public List<Usuario> obtenerCantidadUsuarios();
 
 }
