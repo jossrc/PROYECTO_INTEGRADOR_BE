@@ -1,5 +1,7 @@
 package com.postales.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,12 @@ public class PaqueteServiceImpl implements PaqueteService{
 	@Override
 	public Paquete registrar(Paquete paquete) {
 		return repository.save(paquete);
+	}
+
+	@Override
+	public List<Paquete> listarPaquetes() {
+		// TODO Auto-generated method stub
+		return repository.listarPaquetes();
 	}
 
 }
