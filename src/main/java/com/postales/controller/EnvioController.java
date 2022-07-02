@@ -69,6 +69,27 @@ public class EnvioController {
 		
 	}
 	
+	@GetMapping("/listaEnviosPorDia")
+	@Secured("ROLE_ADMIN")
+	@Operation(summary = "Listar todos los envíos por dia")
+	@ResponseBody
+	public ResponseEntity<List<Envio>> listEnviosPorDia() {
+		
+		List<Envio> lista = serv.listarEnviosPorDia();
+		return ResponseEntity.ok(lista);
+		
+	}
+	@GetMapping("/listaEnviosPorUsuarioDia")
+	@Secured("ROLE_CLIENTE")
+	@Operation(summary = "Listar todos los envíos por dia")
+	@ResponseBody
+	public ResponseEntity<List<Envio>> listEnviosPorUsuarioDia() {
+    	int idUsu = usuServ.obtenerIdUsuarioPeticion();
+
+		List<Envio> lista = serv.listaEnvioUsu(idUsu);
+		return ResponseEntity.ok(lista);
+		
+	}
 	/*@GetMapping("/listaEnvioPorIdLike/{idUsu}")
 	@ResponseBody
 	public ResponseEntity<List<Envio>> listaEnvioPorIdLike(@PathVariable("idUsu") int idUsu){

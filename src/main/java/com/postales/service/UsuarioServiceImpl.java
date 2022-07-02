@@ -75,4 +75,16 @@ public class UsuarioServiceImpl implements UsuarioService  {
 
         return id;
     }
+
+	@Override
+	public List<Usuario> obtenerEmpleadoPerfilRol(int id) {
+		// TODO Auto-generated method stub
+		return repository.obtenerEmpleadoPerfilRol(id);
+	}
+	
+	@Override
+	public List<Usuario> obtenerCantidadUsuarios() {
+		// TODO Auto-generated method stub
+		return repository.obtenerCantidadUsuarios();
+	}
 }

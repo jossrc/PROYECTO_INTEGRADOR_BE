@@ -17,4 +17,17 @@ public interface EnvioRepository extends JpaRepository<Envio, Integer> {
 	
 	/*public List<Envio> findByIdLike(int idUsu);*/
 	
+	@Query("select e from Envio e")
+	public List<Envio> listarEnvios();
+	
+	@Query("select e from Envio e where e.fechaCreacion = current_date")
+	public List<Envio> listarEnviosPorDia();
+	
+	@Query("Select e from Envio e where "
+			+ "e.usuario.idUsuario = ?1 and e.estado = 1")
+	public List<Envio> listarEnviosEnviando(int idUsu);
+	
+	@Query("Select e from Envio e where "
+			+ "e.usuario.idUsuario = ?1 and e.fechaCreacion = current_date")
+	public List<Envio> listarEnviosPorIdYDia(int idUsu);
 }
