@@ -1,5 +1,6 @@
 package com.postales.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -232,6 +234,43 @@ public class EnvioController {
         }
         return ResponseEntity.ok(data);
 
+    }
+	
+	@PutMapping("finalizar-envio/{id}")
+	@Secured({"ROLE_ADMIN" , "ROLE_OPERADOR"})
+    @Operation(summary = "Finalizar envío por cotización")
+    @ResponseBody
+    @Transactional(readOnly = false)
+	public ResponseEntity<HashMap<String, Object>> finalizarEnvio(@PathVariable int id) {
+        HashMap<String, Object> salida = new HashMap<String, Object>();
+        salida.put("objeto", null);
+        salida.put("datos", new ArrayList<>());
+        try {
+            Optional<Envio> optional = serv.buscarPorId(id);
+            if (optional.isPresent()) {
+            	Envio envio = optional.get();
+            	envio.setEstado(2);
+            	envio.setFechaEntrega(new Date());
+            	Envio eliminado = serv.actualizar(envio);
+                if (eliminado != null) {
+                    salida.put("ok", true);
+                    salida.put("mensaje", "Se pudo finalizar el envio");
+                } else {
+                    salida.put("ok", false);
+                    salida.put("mensaje", "No se pudo finalizar el envio");
+                }
+
+            } else {
+                salida.put("ok", false);
+                salida.put("mensaje", "La cotizacion con ID " + id + " no existe");
+            }
+
+        } catch (Exception e) {
+            salida.put("ok", false);
+            salida.put("mensaje", "Sucedió un error inesperado consulte con su administrador");
+        }
+
+        return ResponseEntity.ok(salida);
     }
 	
 }

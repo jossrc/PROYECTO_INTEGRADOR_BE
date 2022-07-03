@@ -1,14 +1,19 @@
 package com.postales.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.postales.entity.Envio;
 
 public interface EnvioService {
 	
 	public Envio registrar(Envio envio);
+	
+	public Envio actualizar(Envio envio);
 
 	public abstract List<Envio> listarEnvio();
+	
+	public Optional<Envio> buscarPorId(int id);
 	
 	public List<Envio> listarEnvios();
 	public List<Envio> listarEnviosPorDia();
